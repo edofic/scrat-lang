@@ -1,4 +1,4 @@
-package com.edofic.lang
+package com.edofic.scrat
 
 /**
  * User: andraz
@@ -9,7 +9,9 @@ object Tokens {
 
   sealed trait Expression
 
-  case class Number(n: Double) extends Expression
+  case class Number(value: Double) extends Expression
+
+  case class Identifier(id: String) extends Expression
 
   case class Add(left: Expression, right: Expression) extends Expression
 
@@ -18,5 +20,7 @@ object Tokens {
   case class Multiply(left: Expression, right: Expression) extends Expression
 
   case class Divide(left: Expression, right: Expression) extends Expression
+
+  case class Exponent(left: Expression, right: Expression) extends Expression
 
 }
