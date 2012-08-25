@@ -11,10 +11,10 @@ import Util.Implicits._
 object Repl {
   def apply(s: String) = s --> Parser.apply --> Evaluator.apply
 
-  def repl = {
-    def rep: Unit = {
+  def repl() {
+    def rep() {
       print(">> ")
-      readLine match {
+      readLine() match {
         case "exit" => return
         case "help" => println("enter an expression\nsupported: floats + - * / ( )")
         case exp => {
@@ -26,10 +26,12 @@ object Repl {
           }
         }
       }
-      rep
+      rep()
     }
-    rep
+    rep()
   }
 
-  def main(args: Array[String]) = repl
+  def main(args: Array[String]) {
+    repl()
+  }
 }
