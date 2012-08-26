@@ -28,7 +28,7 @@ object Repl {
       |   println("x is ", x)
       |-standard library
       |   constants: pi, e
-      |   functions: ln, log, print, println, readln
+      |   functions: ln, log, print, println, readln, mkString
     """.stripMargin
 
   def repl() {

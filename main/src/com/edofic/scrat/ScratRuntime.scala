@@ -23,6 +23,7 @@ class ScratRuntime {
     ("e" -> math.E),
     ("ln" -> functions.ln),
     ("log" -> functions.log),
+    ("mkString" -> functions.mkString),
     ("print" -> functions.sprint),
     ("println" -> functions.sprintln),
     ("readln" -> functions.sreadln)
@@ -44,13 +45,18 @@ class ScratRuntime {
       case other => throw ScratInvalidTypeError("expected single double but got " + other)
     }
 
+    lazy val mkString: FunctionVarArg = {
+      case lst: List[_] => lst.mkString(" ")
+      case other => throw ScratInvalidTypeError("expected a list but got " + other)
+    }
+
     lazy val sprint: FunctionVarArg = {
-      case lst: List[_] => print(lst.mkString(" "))
+      case lst: List[_] => lst --> mkString --> print
       case other => throw ScratInvalidTypeError("expected a list but got " + other)
     }
 
     lazy val sprintln: FunctionVarArg = {
-      case lst: List[_] => println(lst.mkString(" "))
+      case lst: List[_] => lst --> mkString --> println
       case other => throw ScratInvalidTypeError("expected a list but got " + other)
     }
 

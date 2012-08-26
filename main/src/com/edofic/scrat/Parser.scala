@@ -21,7 +21,7 @@ object Parser extends RegexParsers {
   }
 
   private def string: Parser[SString] = "\".*?\"".r ^^ {
-    s => SString(s)
+    s => SString(s.substring(1, s.length - 1))
   }
 
   private def list: Parser[ExpList] = repsep(expr, ",") ^^ {
