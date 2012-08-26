@@ -20,6 +20,7 @@ object Evaluator {
 
   def apply(e: Expression): Any = e match {
     case Number(n) => n
+    case SString(s) => s
     case Add(l, r) => binary(l, r)((_: Double) + (_: Double))
     case Subtract(l, r) => binary(l, r)((_: Double) - (_: Double))
     case Multiply(l, r) => binary(l, r)((_: Double) * (_: Double))
@@ -28,7 +29,7 @@ object Evaluator {
     case Identifier(name) => {
       //lookup standard library
       StdLib(name) match {
-        case Some(v: Double) => v
+        case Some(v) => v
         case _ => throw new ScratSemanticError(name + " not found")
       }
     }

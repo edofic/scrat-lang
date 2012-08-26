@@ -13,6 +13,8 @@ object Tokens {
 
   case class Identifier(id: String) extends Expression
 
+  case class SString(s: String) extends Expression
+
   case class Add(left: Expression, right: Expression) extends Expression
 
   case class Subtract(left: Expression, right: Expression) extends Expression

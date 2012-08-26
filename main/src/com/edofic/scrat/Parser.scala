@@ -20,6 +20,10 @@ object Parser extends RegexParsers {
     s => Identifier(s)
   }
 
+  private def string: Parser[SString] = "\"\\w+\"".r ^^ {
+    s => SString(s)
+  }
+
   private def list: Parser[ExpList] = repsep(expr, ",") ^^ {
     lst => ExpList(lst)
   }
@@ -30,7 +34,7 @@ object Parser extends RegexParsers {
     case id ~ args => FunctionCall(id, args)
   }
 
-  private def value: Parser[Expression] = number | (identifier ||| functionCall)
+  private def value: Parser[Expression] = number | string | (identifier ||| functionCall)
 
   private def exponent: Parser[Expression] = (value | parenExpr) ~ "^" ~ (value | parenExpr) ^^ {
     case a ~ "^" ~ b => Exponent(a, b)
