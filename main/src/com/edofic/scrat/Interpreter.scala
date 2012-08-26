@@ -10,15 +10,15 @@ import java.io.File
 object Interpreter {
   def main(args: Array[String]) = {
     if (args.length != 1) {
-      println("parameters: filename to interpret")
+      println("no filename in arguments -> interactive mode")
+      Repl.main(args)
     } else {
       interpretFile(new File(args(0)))
     }
   }
 
-  val runtime = new ScratRuntime
-
   def interpretFile(file: File) {
+    val runtime = new ScratRuntime
     if (file.canRead) {
       val source = io.Source.fromFile(file)
       source.getLines().foreach(runtime.eval)
