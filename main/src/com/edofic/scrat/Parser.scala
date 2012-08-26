@@ -55,7 +55,7 @@ object Parser extends RegexParsers {
 
   private def parenExpr: Parser[Expression] = "(" ~> expr <~ ")"
 
-  private def expr: Parser[Expression] = term ~ rep(("+" | "-") ~ term) ^^ {
+  private def sum: Parser[Expression] = term ~ rep(("+" | "-") ~ term) ^^ {
     case head ~ tail => {
       var tree: Expression = head
       tail.foreach {
@@ -65,6 +65,12 @@ object Parser extends RegexParsers {
       tree
     }
   }
+
+  private def assignment: Parser[Assignment] = identifier ~ "=" ~ expr ^^ {
+    case id ~ "=" ~ exp => Assignment(id, exp)
+  }
+
+  private def expr: Parser[Expression] = sum ||| assignment
 
   def apply(s: String): Expression = parseAll(expr, s) match {
     case Success(tree, _) => tree

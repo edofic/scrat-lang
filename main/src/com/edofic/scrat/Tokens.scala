@@ -29,4 +29,6 @@ object Tokens {
 
   case class FunctionCall(name: Identifier, args: ExpList) extends Expression
 
+  case class Assignment(to: Identifier, from: Expression) extends Expression
+
 }

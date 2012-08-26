@@ -7,16 +7,22 @@ import com.edofic.scrat.Util.Exceptions._
  * Date: 8/25/12
  * Time: 10:25 PM
  */
-object StdLib {
+object ScratRuntime {
   type FunctionVarArg = Any => Any
+}
 
-  val identifiers: Map[String, Any] = Map(
+class ScratRuntime {
+
+  import ScratRuntime.FunctionVarArg
+
+  val identifiers: collection.mutable.Map[String, Any] = collection.mutable.Map(
     ("pi" -> math.Pi),
     ("e" -> math.E),
     ("ln" -> functions.ln),
     ("log" -> functions.log),
     ("print" -> functions.sprint),
-    ("println" -> functions.sprintln)
+    ("println" -> functions.sprintln),
+    ("readln" -> functions.sreadln)
   )
 
   def apply(key: String): Option[Any] = identifiers.get(key)
@@ -40,6 +46,10 @@ object StdLib {
     lazy val sprintln: FunctionVarArg = {
       case lst: List[_] => println(lst.mkString(" "))
       case other => throw ScratInvalidTypeError("expected a list but got " + other)
+    }
+
+    lazy val sreadln: FunctionVarArg = _ => {
+      readLine()
     }
   }
 
