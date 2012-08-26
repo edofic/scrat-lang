@@ -20,7 +20,7 @@ object Parser extends RegexParsers {
     s => Identifier(s)
   }
 
-  private def string: Parser[SString] = "\"\\w+\"".r ^^ {
+  private def string: Parser[SString] = "\".*?\"".r ^^ {
     s => SString(s)
   }
 

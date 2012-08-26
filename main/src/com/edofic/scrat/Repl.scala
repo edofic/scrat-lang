@@ -1,7 +1,6 @@
 package com.edofic.scrat
 
 import com.edofic.scrat.Util.Exceptions._
-import Util.Implicits._
 
 /**
  * User: andraz
@@ -9,7 +8,9 @@ import Util.Implicits._
  * Time: 10:16 PM
  */
 object Repl {
-  def apply(s: String) = s --> Parser.apply --> Evaluator.apply
+  val runtime = new ScratRuntime
+
+  def apply(s: String) = runtime.eval(s)
 
   def repl() {
     def rep() {

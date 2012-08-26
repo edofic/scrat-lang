@@ -1,6 +1,7 @@
 package com.edofic.scrat
 
 import com.edofic.scrat.Util.Exceptions._
+import Util.Implicits._
 
 /**
  * User: andraz
@@ -15,7 +16,9 @@ class ScratRuntime {
 
   import ScratRuntime.FunctionVarArg
 
-  val identifiers: collection.mutable.Map[String, Any] = collection.mutable.Map(
+  val evaluator = new Evaluator(this)
+
+  private val identifiers: collection.mutable.Map[String, Any] = collection.mutable.Map(
     ("pi" -> math.Pi),
     ("e" -> math.E),
     ("ln" -> functions.ln),
@@ -25,7 +28,10 @@ class ScratRuntime {
     ("readln" -> functions.sreadln)
   )
 
-  def apply(key: String): Option[Any] = identifiers.get(key)
+  val get: String => Option[Any] = identifiers.get
+  val put: (String, Any) => Option[Any] = identifiers.put
+
+  def eval(s: String) = s --> Parser.apply --> evaluator.apply
 
   private object functions {
     lazy val ln: FunctionVarArg = {
