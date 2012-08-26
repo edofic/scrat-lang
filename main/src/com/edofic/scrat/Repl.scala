@@ -1,6 +1,6 @@
 package com.edofic.scrat
 
-import com.edofic.scrat.Util.Exceptions.{SyntaxError, SemanticError}
+import com.edofic.scrat.Util.Exceptions._
 import Util.Implicits._
 
 /**
@@ -21,8 +21,9 @@ object Repl {
           try {
             println(apply(exp))
           } catch {
-            case SemanticError(msg) => println("semantic error: " + msg)
-            case SyntaxError(msg) => println("syntax error: " + msg)
+            case ScratSemanticError(msg) => println("semantic error: " + msg)
+            case ScratSyntaxError(msg) => println("syntax error: " + msg)
+            case ScratInvalidTypeError(msg) => println("type error: " + msg)
           }
         }
       }

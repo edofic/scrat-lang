@@ -23,4 +23,8 @@ object Tokens {
 
   case class Exponent(left: Expression, right: Expression) extends Expression
 
+  case class ExpList(lst: List[Expression]) extends Expression
+
+  case class FunctionCall(name: Identifier, args: ExpList) extends Expression
+
 }

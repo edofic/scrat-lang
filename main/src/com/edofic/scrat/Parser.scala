@@ -1,7 +1,7 @@
 package com.edofic.scrat
 
 import util.parsing.combinator.RegexParsers
-import util.regexp.SyntaxError
+import com.edofic.scrat.Util.Exceptions.ScratSyntaxError
 
 /**
  * User: andraz
@@ -9,20 +9,31 @@ import util.regexp.SyntaxError
  * Time: 10:15 PM
  */
 object Parser extends RegexParsers {
+
   import Tokens._
 
-  private def number: Parser[Expression] = """\d+\.?\d*""".r ^^ {
+  private def number: Parser[Number] = """\d+\.?\d*""".r ^^ {
     s => Number(s.toDouble)
   }
 
-  private def identifier: Parser[Expression] = "[a-zA-Z]\\w*".r ^^ {
+  private def identifier: Parser[Identifier] = "[a-zA-Z]\\w*".r ^^ {
     s => Identifier(s)
   }
 
-  private def value: Parser[Expression] = number | identifier
+  private def list: Parser[ExpList] = repsep(expr, ",") ^^ {
+    lst => ExpList(lst)
+  }
+
+  private def arglist: Parser[ExpList] = "(" ~> list <~ ")"
+
+  private def functionCall: Parser[FunctionCall] = identifier ~ arglist ^^ {
+    case id ~ args => FunctionCall(id, args)
+  }
+
+  private def value: Parser[Expression] = number | (identifier ||| functionCall)
 
   private def exponent: Parser[Expression] = (value | parenExpr) ~ "^" ~ (value | parenExpr) ^^ {
-    case a ~ "^" ~ b => Exponent(a,b)
+    case a ~ "^" ~ b => Exponent(a, b)
   }
 
   private def factor: Parser[Expression] = (value ||| exponent) | parenExpr
@@ -53,6 +64,6 @@ object Parser extends RegexParsers {
 
   def apply(s: String): Expression = parseAll(expr, s) match {
     case Success(tree, _) => tree
-    case e: NoSuccess => throw new SyntaxError("parsing error")
+    case e: NoSuccess => throw new ScratSyntaxError("parsing error")
   }
 }
