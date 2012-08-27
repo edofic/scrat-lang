@@ -10,12 +10,13 @@ import ScratRuntime.FunctionVarArg
  * Time: 10:15 PM
  */
 class Evaluator(runtime: ScratRuntime) {
-  private def binaryDouble(l: Expression, r: Expression)(f: (Double, Double) => Double): Double = (apply(l), apply(r)) match {
+  private def binaryDouble(l: Expression, r: Expression)(f: (Double, Double) => Double)
+                          (implicit scope: SScope): Double = (apply(l), apply(r)) match {
     case (a: Double, b: Double) => f(a, b)
     case other => throw new ScratInvalidTypeError("expected two doubles, got " + other)
   }
 
-  def apply(e: Expression): Any = e match {
+  def apply(e: Expression)(implicit scope: SScope): Any = e match {
     case Number(n) => n
     case SString(s) => s
     case Add(l, r) => binaryDouble(l, r)(_ + _)
@@ -24,19 +25,19 @@ class Evaluator(runtime: ScratRuntime) {
     case Divide(l, r) => binaryDouble(l, r)(_ / _)
     case Exponent(l, r) => binaryDouble(l, r)(math.pow)
     case Identifier(name) => {
-      runtime.get(name) match {
+      scope.get(name) match {
         case Some(v) => v
         case _ => throw new ScratSemanticError(name + " not found")
       }
     }
     case ExpList(lst) => lst map apply
-    case FunctionCall(name, args) => runtime.get(name.id) match {
+    case FunctionCall(name, args) => scope.get(name.id) match {
       case Some(f: FunctionVarArg) => f.apply(apply(args))
       case None => throw new ScratSemanticError("function " + name + "not found")
     }
     case Assignment(name, exp) => {
       val e = apply(exp)
-      runtime.put(name.id, e)
+      scope.put(name.id, e)
       e
     }
     case IfThenElse(pred, then, els) => apply(pred) match {

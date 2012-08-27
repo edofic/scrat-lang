@@ -17,6 +17,8 @@ object Util {
 
     case class ScratInvalidTypeError(msg: String) extends Exception(msg)
 
+    case class ScratNotAllowedError(msg: String) extends Exception(msg)
+
   }
 
   object Implicits {

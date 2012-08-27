@@ -13,12 +13,14 @@ object ScratRuntime {
 }
 
 class ScratRuntime {
-
-  import ScratRuntime.FunctionVarArg
-
   val evaluator = new Evaluator(this)
+  implicit val globalScope = new SScope(Some(StdLib))
 
-  private val identifiers: collection.mutable.Map[String, Any] = collection.mutable.Map(
+  def eval(s: String) = s --> Parser.apply --> evaluator.apply
+}
+
+object StdLib extends SScope(None) {
+  val map = Map(
     ("pi" -> math.Pi),
     ("e" -> math.E),
     ("ln" -> functions.ln),
@@ -30,12 +32,16 @@ class ScratRuntime {
     ("toNum" -> functions.toNum)
   )
 
-  val get: String => Option[Any] = identifiers.get
-  val put: (String, Any) => Option[Any] = identifiers.put
+  override def put(key: String, value: Any) {
+    throw new ScratNotAllowedError("this is not implemented and shouldn't be")
+  }
 
-  def eval(s: String) = s --> Parser.apply --> evaluator.apply
+  override def get(key: String) = map.get(key)
 
   private object functions {
+
+    import ScratRuntime._
+
     lazy val ln: FunctionVarArg = {
       case (d: Double) :: Nil => math.log(d)
       case other => throw ScratInvalidTypeError("expected single double but got " + other)
