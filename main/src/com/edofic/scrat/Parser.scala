@@ -90,12 +90,21 @@ object Parser extends RegexParsers {
 
   private def noEqExpr: Parser[Expression] = sum ||| assignment ||| ifThenElse
 
-  private def expr = noEqExpr ||| equality
+  private def expr: Parser[Expression] = noEqExpr ||| equality ||| functionDef
 
-  private def exprList = rep1sep(expr, "\n")
+  private def exprList: Parser[List[Expression]] = repsep(expr, "\\n+".r)
+
+  private def block: Parser[List[Expression]] = """\{\n*""".r ~> exprList <~ """\n*\}""".r
+
+  private def functionDef: Parser[FunctionDef] =
+    "func" ~ identifier ~ ("(" ~> repsep(identifier, ",") <~ ")") ~ block ^^ {
+      case "func" ~ id ~ args ~ body => FunctionDef(id, args, body)
+    }
 
   def apply(s: String): List[Expression] = parseAll(exprList, s) match {
     case Success(tree, _) => tree
-    case e: NoSuccess => throw new ScratSyntaxError("parsing error")
+    case Failure(msg, next) => throw new ScratSyntaxError("parsing failure: " + msg + " near: " + next.rest.source)
+    case Error(msg, next) => throw new ScratSyntaxError("parsing error: " + msg + " near: " + next.source)
+    case NoSuccess(msg, next) => throw new ScratSyntaxError("parser NoSuccess: " + msg + " near: " + next.source)
   }
 }

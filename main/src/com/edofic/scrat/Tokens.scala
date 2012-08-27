@@ -37,4 +37,6 @@ object Tokens {
 
   case class NotEquals(left: Expression, right: Expression) extends Expression
 
+  case class FunctionDef(name: Identifier, args: List[Identifier], body: List[Expression]) extends Expression
+
 }

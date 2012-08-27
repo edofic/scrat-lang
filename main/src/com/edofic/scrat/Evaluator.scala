@@ -2,7 +2,7 @@ package com.edofic.scrat
 
 import com.edofic.scrat.Util.Exceptions._
 import Tokens._
-import ScratRuntime.FunctionVarArg
+import ScratRuntime._
 
 /**
  * User: andraz
@@ -37,7 +37,8 @@ class Evaluator(runtime: ScratRuntime) {
     case ExpList(lst) => lst map apply
     case FunctionCall(name, args) => scope.get(name.id) match {
       case Some(f: FunctionVarArg) => f.apply(apply(args))
-      case None => throw new ScratSemanticError("function " + name + "not found")
+      case Some(f: StoredFunction) => f.apply(this, apply(args))
+      case _ => throw new ScratSemanticError("function " + name + "not found")
     }
     case Assignment(name, exp) => {
       val e = apply(exp)
@@ -50,6 +51,12 @@ class Evaluator(runtime: ScratRuntime) {
     }
     case Equals(l, r) => (if (apply(l) == apply(r)) 1 else 0): Double
     case NotEquals(l, r) => (if (apply(l) != apply(r)) 1 else 0): Double
+    case FunctionDef(name, args, body) => {
+      val fun = ScratRuntime.createFunFromAst(args, body, scope)
+      scope.put(name.id, fun)
+      fun
+    }
     case t => throw new ScratInvalidTokenError(t + " not implemented in evaluator")
   }
+
 }
