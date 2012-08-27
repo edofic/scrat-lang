@@ -21,8 +21,9 @@ object Interpreter {
     val runtime = new ScratRuntime
     if (file.canRead) {
       val source = io.Source.fromFile(file)
-      source.getLines().foreach(runtime.eval)
+      val content = source.mkString
       source.close()
+      runtime.eval(content)
     } else {
       println("cannot open file " + file.getPath)
     }

@@ -1,6 +1,7 @@
 package com.edofic.scrat
 
 import com.edofic.scrat.Util.Exceptions._
+import Util.Implicits._
 
 /**
  * User: andraz
@@ -48,9 +49,9 @@ object Repl {
         case exp => {
           try {
             if (exp.charAt(exp.length - 1) == '|') {
-              rep(buffer + "\n" + exp)
+              (buffer + "\n" + exp.substring(0, exp.length-1)) --> rep
             } else {
-              println(apply(exp))
+              (buffer+"\n"+exp) --> runtime.eval --> println
             }
           } catch {
             case ScratSemanticError(msg) => println("semantic error: " + msg)

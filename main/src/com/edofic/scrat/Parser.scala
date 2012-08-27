@@ -12,8 +12,7 @@ object Parser extends RegexParsers {
 
   import Tokens._
 
-
-  override protected val whiteSpace = """[ \t\x0B\f\r]""".r
+  override protected val whiteSpace = """[ \t\x0B\f\r]+""".r
 
   private def number: Parser[Number] = """\d+\.?\d*""".r ^^ {
     s => Number(s.toDouble)
@@ -37,7 +36,7 @@ object Parser extends RegexParsers {
     case id ~ args => FunctionCall(id, args)
   }
 
-  private def value: Parser[Expression] = number | string | (identifier ||| functionCall)
+  private def value: Parser[Expression] = number | string | functionCall | identifier
 
   private def exponent: Parser[Expression] = (value | parenExpr) ~ "^" ~ (value | parenExpr) ^^ {
     case a ~ "^" ~ b => Exponent(a, b)
@@ -55,8 +54,6 @@ object Parser extends RegexParsers {
       tree
     }
   }
-
-  private def parenExpr: Parser[Expression] = "(" ~> expr <~ ")"
 
   private def sum: Parser[Expression] = term ~ rep(("+" | "-") ~ term) ^^ {
     case head ~ tail => {
@@ -88,13 +85,15 @@ object Parser extends RegexParsers {
     }
   }
 
-  private def noEqExpr: Parser[Expression] = sum ||| assignment ||| ifThenElse
+  private def noEqExpr: Parser[Expression] = ifThenElse | assignment | sum
 
-  private def expr: Parser[Expression] = noEqExpr ||| equality ||| functionDef
+  private def expr: Parser[Expression] = functionDef | equality | noEqExpr
 
-  private def exprList: Parser[List[Expression]] = repsep(expr, "\\n+".r)
+  private def parenExpr: Parser[Expression] = "(" ~> expr <~ ")"
 
-  private def block: Parser[List[Expression]] = """\{\n*""".r ~> exprList <~ """\n*\}""".r
+  def exprList: Parser[List[Expression]] = rep("\n") ~> repsep(expr, rep1("\n")) <~ rep("\n")
+
+  def block: Parser[List[Expression]] = ("{" ~ rep("\n")) ~> repsep(expr, "\n") <~ (rep("\n") ~ "}")
 
   private def functionDef: Parser[FunctionDef] =
     "func" ~ identifier ~ ("(" ~> repsep(identifier, ",") <~ ")") ~ block ^^ {
