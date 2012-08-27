@@ -13,5 +13,7 @@ class SScope(val parent: Option[SScope]) {
     case None => parent.flatMap(_.get(key))
   }
 
-  def put(key: String, value: Any): Unit = map.put(key, value)
+  def put(key: String, value: Any) {
+    map.put(key, value)
+  }
 }

@@ -8,7 +8,7 @@ import java.io.File
  * Time: 12:13 PM
  */
 object Interpreter {
-  def main(args: Array[String]) = {
+  def main(args: Array[String]) {
     if (args.length != 1) {
       println("no filename in arguments -> interactive mode")
       Repl.main(args)
