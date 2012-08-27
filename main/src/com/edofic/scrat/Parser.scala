@@ -12,6 +12,9 @@ object Parser extends RegexParsers {
 
   import Tokens._
 
+
+  override protected val whiteSpace = """[ \t\x0B\f\r]""".r
+
   private def number: Parser[Number] = """\d+\.?\d*""".r ^^ {
     s => Number(s.toDouble)
   }
@@ -24,11 +27,11 @@ object Parser extends RegexParsers {
     s => SString(s.substring(1, s.length - 1))
   }
 
-  private def list: Parser[ExpList] = repsep(expr, ",") ^^ {
+  private def commaList: Parser[ExpList] = repsep(expr, ",") ^^ {
     lst => ExpList(lst)
   }
 
-  private def arglist: Parser[ExpList] = "(" ~> list <~ ")"
+  private def arglist: Parser[ExpList] = "(" ~> commaList <~ ")"
 
   private def functionCall: Parser[FunctionCall] = identifier ~ arglist ^^ {
     case id ~ args => FunctionCall(id, args)
@@ -89,7 +92,9 @@ object Parser extends RegexParsers {
 
   private def expr = noEqExpr ||| equality
 
-  def apply(s: String): Expression = parseAll(expr, s) match {
+  private def exprList = rep1sep(expr, "\n")
+
+  def apply(s: String): List[Expression] = parseAll(exprList, s) match {
     case Success(tree, _) => tree
     case e: NoSuccess => throw new ScratSyntaxError("parsing error")
   }

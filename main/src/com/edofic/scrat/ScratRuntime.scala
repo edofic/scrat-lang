@@ -54,17 +54,17 @@ object StdLib extends SScope(None) {
 
     lazy val mkString: FunctionVarArg = {
       case lst: List[_] => lst.mkString(" ")
-      case other => throw ScratInvalidTypeError("expected a list but got " + other)
+      case other => throw ScratInvalidTypeError("expected a commaList but got " + other)
     }
 
     lazy val sprint: FunctionVarArg = {
       case lst: List[_] => lst --> mkString --> print
-      case other => throw ScratInvalidTypeError("expected a list but got " + other)
+      case other => throw ScratInvalidTypeError("expected a commaList but got " + other)
     }
 
     lazy val sprintln: FunctionVarArg = {
       case lst: List[_] => lst --> mkString --> println
-      case other => throw ScratInvalidTypeError("expected a list but got " + other)
+      case other => throw ScratInvalidTypeError("expected a commaList but got " + other)
     }
 
     lazy val sreadln: FunctionVarArg = _ => {

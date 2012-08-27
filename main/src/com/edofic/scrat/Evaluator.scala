@@ -16,6 +16,10 @@ class Evaluator(runtime: ScratRuntime) {
     case other => throw new ScratInvalidTypeError("expected two doubles, got " + other)
   }
 
+  def apply(e: List[Expression])(implicit scope: SScope): Any = {
+    e map apply last
+  }
+
   def apply(e: Expression)(implicit scope: SScope): Any = e match {
     case Number(n) => n
     case SString(s) => s

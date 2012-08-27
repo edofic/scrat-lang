@@ -19,6 +19,8 @@ object Repl {
       |:run filename  loads and interprets the file
       |:help          prints this message
       |
+      |Append | to then end of a line to enter multiline expressions
+      |
       |Language:
       |-mathematical expressions containing
       |   == != + - * / ^ ( )  variable-names function application-e.g. ln(10), println(1,2,3)
@@ -37,8 +39,7 @@ object Repl {
     println("Welcome to Scrat Language REPL")
     println("type in expressions to evaluate them")
     println("type :help for more information")
-    def rep() {
-      println()
+    def rep(buffer: String) {
       print(">> ")
       readLine() match {
         case ":exit" => return
@@ -46,7 +47,11 @@ object Repl {
         case Run(filename) => Interpreter.main(Array(filename))
         case exp => {
           try {
-            println(apply(exp))
+            if (exp.charAt(exp.length - 1) == '|') {
+              rep(buffer + "\n" + exp)
+            } else {
+              println(apply(exp))
+            }
           } catch {
             case ScratSemanticError(msg) => println("semantic error: " + msg)
             case ScratSyntaxError(msg) => println("syntax error: " + msg)
@@ -54,9 +59,9 @@ object Repl {
           }
         }
       }
-      rep()
+      rep("")
     }
-    rep()
+    rep("")
   }
 
   def main(args: Array[String]) {
