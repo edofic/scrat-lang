@@ -21,14 +21,14 @@ object Repl {
       |
       |Language:
       |-mathematical expressions containing
-      |   + - * / ( ) ^(exponent) variable-names function application-e.g. ln(10), println(1,2,3)
+      |   == != + - * / ^ ( )  variable-names function application-e.g. ln(10), println(1,2,3)
       |-strings
       |-assignments
       |   x = ln(4)
-      |   println("x is ", x)
+      |   println("x is", x)
       |-standard library
       |   constants: pi, e
-      |   functions: ln, log, print, println, readln, mkString
+      |   functions: ln, log, print, println, readln, mkString, toNum
     """.stripMargin
 
   def repl() {

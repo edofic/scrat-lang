@@ -70,7 +70,24 @@ object Parser extends RegexParsers {
     case id ~ "=" ~ exp => Assignment(id, exp)
   }
 
-  private def expr: Parser[Expression] = sum ||| assignment
+  private def ifThenElse: Parser[IfThenElse] = "if" ~ expr ~ "then" ~ expr ~ "else" ~ expr ^^ {
+    case "if" ~ predicate ~ "then" ~ then ~ "else" ~ els => IfThenElse(predicate, then, els)
+  }
+
+  private def equality: Parser[Expression] = noEqExpr ~ rep(("==" | "!=") ~ noEqExpr) ^^ {
+    case head ~ tail => {
+      var tree: Expression = head
+      tail.foreach {
+        case "==" ~ e => tree = Equals(tree, e)
+        case "!=" ~ e => tree = NotEquals(tree, e)
+      }
+      tree
+    }
+  }
+
+  private def noEqExpr: Parser[Expression] = sum ||| assignment ||| ifThenElse
+
+  private def expr = noEqExpr ||| equality
 
   def apply(s: String): Expression = parseAll(expr, s) match {
     case Success(tree, _) => tree

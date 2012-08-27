@@ -26,7 +26,8 @@ class ScratRuntime {
     ("mkString" -> functions.mkString),
     ("print" -> functions.sprint),
     ("println" -> functions.sprintln),
-    ("readln" -> functions.sreadln)
+    ("readln" -> functions.sreadln),
+    ("toNum" -> functions.toNum)
   )
 
   val get: String => Option[Any] = identifiers.get
@@ -62,6 +63,12 @@ class ScratRuntime {
 
     lazy val sreadln: FunctionVarArg = _ => {
       readLine()
+    }
+
+    lazy val toNum: FunctionVarArg = {
+      case (s: String) :: Nil => s.toDouble
+      case (d: Double) :: Nil => d
+      case other => throw ScratInvalidTypeError("expected a string or a double but got " + other)
     }
   }
 

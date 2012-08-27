@@ -31,4 +31,10 @@ object Tokens {
 
   case class Assignment(to: Identifier, from: Expression) extends Expression
 
+  case class IfThenElse(predicate: Expression, then: Expression, els: Expression) extends Expression
+
+  case class Equals(left: Expression, right: Expression) extends Expression
+
+  case class NotEquals(left: Expression, right: Expression) extends Expression
+
 }

@@ -10,19 +10,19 @@ import ScratRuntime.FunctionVarArg
  * Time: 10:15 PM
  */
 class Evaluator(runtime: ScratRuntime) {
-  private def binary[L, R](l: Expression, r: Expression)(f: (L, R) => Any) = (apply(l), apply(r)) match {
-    case (l: L, r: R) => f(l, r)
-    case other => throw new ScratInvalidTypeError(String.format("in %s got %s", f.toString(), other.toString))
+  private def binaryDouble(l: Expression, r: Expression)(f: (Double, Double) => Double): Double = (apply(l), apply(r)) match {
+    case (a: Double, b: Double) => f(a, b)
+    case other => throw new ScratInvalidTypeError("expected two doubles, got " + other)
   }
 
   def apply(e: Expression): Any = e match {
     case Number(n) => n
     case SString(s) => s
-    case Add(l, r) => binary(l, r)((_: Double) + (_: Double))
-    case Subtract(l, r) => binary(l, r)((_: Double) - (_: Double))
-    case Multiply(l, r) => binary(l, r)((_: Double) * (_: Double))
-    case Divide(l, r) => binary(l, r)((_: Double) / (_: Double))
-    case Exponent(l, r) => binary(l, r)(math.pow _)
+    case Add(l, r) => binaryDouble(l, r)(_ + _)
+    case Subtract(l, r) => binaryDouble(l, r)(_ - _)
+    case Multiply(l, r) => binaryDouble(l, r)(_ * _)
+    case Divide(l, r) => binaryDouble(l, r)(_ / _)
+    case Exponent(l, r) => binaryDouble(l, r)(math.pow)
     case Identifier(name) => {
       runtime.get(name) match {
         case Some(v) => v
@@ -39,6 +39,12 @@ class Evaluator(runtime: ScratRuntime) {
       runtime.put(name.id, e)
       e
     }
+    case IfThenElse(pred, then, els) => apply(pred) match {
+      case d: Double => if (d != 0) apply(then) else apply(els)
+      case other => throw new ScratInvalidTypeError("expected a number, got " + other)
+    }
+    case Equals(l, r) => (if (apply(l) == apply(r)) 1 else 0): Double
+    case NotEquals(l, r) => (if (apply(l) != apply(r)) 1 else 0): Double
     case t => throw new ScratInvalidTokenError(t + " not implemented in evaluator")
   }
 }
