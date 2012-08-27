@@ -42,7 +42,7 @@ object Parser extends RegexParsers {
     case a ~ "^" ~ b => Exponent(a, b)
   }
 
-  private def factor: Parser[Expression] = (value ||| exponent) | parenExpr
+  private def factor: Parser[Expression] = parenExpr | exponent | value
 
   private def term: Parser[Expression] = factor ~ rep(("*" | "/") ~ factor) ^^ {
     case head ~ tail => {
@@ -70,8 +70,18 @@ object Parser extends RegexParsers {
     case id ~ "=" ~ exp => Assignment(id, exp)
   }
 
-  private def ifThenElse: Parser[IfThenElse] = "if" ~ expr ~ "then" ~ expr ~ "else" ~ expr ^^ {
-    case "if" ~ predicate ~ "then" ~ then ~ "else" ~ els => IfThenElse(predicate, then, els)
+  private def ifThenElse: Parser[IfThenElse] = "if" ~ expr ~ "then" ~ (expr | block) ~ "else" ~ (expr | block) ^^ {
+    case "if" ~ predicate ~ "then" ~ then ~ "else" ~ els => {
+      val thenBlock = then match {
+        case e: Expression => List(e)
+        case b: List[Expression] => b
+      }
+      val elseBlock = els match {
+        case e: Expression => List(e)
+        case b: List[Expression] => b
+      }
+      IfThenElse(predicate, thenBlock, elseBlock)
+    }
   }
 
   private def equality: Parser[Expression] = noEqExpr ~ rep(("==" | "!=") ~ noEqExpr) ^^ {

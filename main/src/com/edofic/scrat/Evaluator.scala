@@ -17,7 +17,10 @@ class Evaluator(runtime: ScratRuntime) {
   }
 
   def apply(e: List[Expression])(implicit scope: SScope): Any = {
-    e map apply last
+    e map apply lastOption match {
+      case Some(a) => a
+      case None => ()
+    }
   }
 
   def apply(e: Expression)(implicit scope: SScope): Any = e match {
@@ -56,6 +59,7 @@ class Evaluator(runtime: ScratRuntime) {
       scope.put(name.id, fun)
       fun
     }
+
     case t => throw new ScratInvalidTokenError(t + " not implemented in evaluator")
   }
 
