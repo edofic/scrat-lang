@@ -29,6 +29,11 @@ object Repl {
       |-assignments
       |   x = ln(4)
       |   println("x is", x)
+      |-functions: func name(arg1,arg2...) { expressions }
+      |-objects: use closure as constructor...like
+      |   func create(n) { this }
+      |   a = create(10)
+      |   a.n == 10
       |-standard library
       |   constants: pi, e
       |   functions: ln, log, print, println, readln, mkString, toNum
@@ -49,9 +54,9 @@ object Repl {
         case exp => {
           try {
             if (exp.charAt(exp.length - 1) == '|') {
-              (buffer + "\n" + exp.substring(0, exp.length-1)) --> rep
+              (buffer + "\n" + exp.substring(0, exp.length - 1)) --> rep
             } else {
-              (buffer+"\n"+exp) --> runtime.eval --> println
+              (buffer + "\n" + exp) --> runtime.eval --> println
             }
           } catch {
             case ScratSemanticError(msg) => println("semantic error: " + msg)

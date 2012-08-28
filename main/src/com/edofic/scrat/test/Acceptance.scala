@@ -61,7 +61,9 @@ class Acceptance extends FunSuite {
         |func i(){
         |hi }
         |if 1 then {} else {}
-        |1
+        |func create(n){this}
+        |a=create(1)
+        |a.n
       """.stripMargin
     val result = runtime.eval(exp)
     val expected = 1 //the big problem is parsing here...not concerned with value

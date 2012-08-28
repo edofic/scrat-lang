@@ -8,6 +8,8 @@ package com.edofic.scrat
 class SScope(val parent: Option[SScope]) {
   private val map = collection.mutable.Map[String, Any]()
 
+  map.put("this", this)
+
   def get(key: String): Option[Any] = map.get(key) match {
     case s: Some[Any] => s
     case None => parent.flatMap(_.get(key))

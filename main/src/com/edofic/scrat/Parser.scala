@@ -18,9 +18,11 @@ object Parser extends RegexParsers {
     s => Number(s.toDouble)
   }
 
-  private def identifier: Parser[Identifier] = "[a-zA-Z]\\w*".r ^^ {
+  private def simpleIdentifier: Parser[Identifier] = "[a-zA-Z]\\w*".r ^^ {
     s => Identifier(s)
   }
+
+  private def identifier: Parser[DotAccess] = rep1sep((functionCall | simpleIdentifier), ".") ^^ DotAccess.apply
 
   private def string: Parser[SString] = "\".*?\"".r ^^ {
     s => SString(s.substring(1, s.length - 1))
@@ -32,7 +34,7 @@ object Parser extends RegexParsers {
 
   private def arglist: Parser[ExpList] = "(" ~> commaList <~ ")"
 
-  private def functionCall: Parser[FunctionCall] = identifier ~ arglist ^^ {
+  private def functionCall: Parser[FunctionCall] = simpleIdentifier ~ arglist ^^ {
     case id ~ args => FunctionCall(id, args)
   }
 
@@ -106,7 +108,7 @@ object Parser extends RegexParsers {
   def block: Parser[List[Expression]] = ("{" ~ rep("\n")) ~> repsep(expr, "\n") <~ (rep("\n") ~ "}")
 
   private def functionDef: Parser[FunctionDef] =
-    "func" ~ identifier ~ ("(" ~> repsep(identifier, ",") <~ ")") ~ block ^^ {
+    "func" ~ simpleIdentifier ~ ("(" ~> repsep(simpleIdentifier, ",") <~ ")") ~ block ^^ {
       case "func" ~ id ~ args ~ body => FunctionDef(id, args, body)
     }
 

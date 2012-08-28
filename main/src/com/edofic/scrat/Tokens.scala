@@ -29,7 +29,7 @@ object Tokens {
 
   case class FunctionCall(name: Identifier, args: ExpList) extends Expression
 
-  case class Assignment(to: Identifier, from: Expression) extends Expression
+  case class Assignment(to: DotAccess, from: Expression) extends Expression
 
   case class IfThenElse(predicate: Expression, then: List[Expression], els: List[Expression]) extends Expression
 
@@ -38,5 +38,7 @@ object Tokens {
   case class NotEquals(left: Expression, right: Expression) extends Expression
 
   case class FunctionDef(name: Identifier, args: List[Identifier], body: List[Expression]) extends Expression
+
+  case class DotAccess(lst: List[Expression]) extends Expression
 
 }
