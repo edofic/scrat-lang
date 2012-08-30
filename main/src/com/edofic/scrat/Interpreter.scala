@@ -13,19 +13,20 @@ object Interpreter {
       println("no filename in arguments -> interactive mode")
       Repl.main(args)
     } else {
-      interpretFile(new File(args(0)))
+      runFile(args(0))
     }
   }
 
-  def interpretFile(file: File) {
-    val runtime = new ScratRuntime
-    if (file.canRead) {
-      val source = io.Source.fromFile(file)
+  def runFile(path: String) = interpretFile(path, new ScratRuntime)
+
+  def interpretFile(path: String, runtime: ScratRuntime) {
+    if (new File(path).canRead) {
+      val source = io.Source.fromFile(path)
       val content = source.mkString
       source.close()
       runtime.eval(content)
     } else {
-      println("cannot open file " + file.getPath)
+      println("cannot open path " + path)
     }
   }
 }

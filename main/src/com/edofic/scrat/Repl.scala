@@ -17,7 +17,7 @@ object Repl {
     """
       |Commands
       |:exit          exits program
-      |:run filename  loads and interprets the file
+      |:run filename  loads and interprets the path
       |:help          prints this message
       |
       |Append | to then end of a line to enter multiline expressions
@@ -41,6 +41,7 @@ object Repl {
 
   def repl() {
     val Run = """:run (.+)""".r
+    val Load = """:load (.+)""".r
 
     println("Welcome to Scrat Language REPL")
     println("type in expressions to evaluate them")
@@ -50,7 +51,8 @@ object Repl {
       readLine() match {
         case ":exit" => return
         case ":help" => println(help)
-        case Run(filename) => Interpreter.main(Array(filename))
+        case Run(filename) => Interpreter.runFile(filename)
+        case Load(filename) => Interpreter.interpretFile(filename, runtime)
         case exp => {
           try {
             if (exp.charAt(exp.length - 1) == '|') {
