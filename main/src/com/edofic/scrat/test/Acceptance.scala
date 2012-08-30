@@ -63,6 +63,7 @@ class Acceptance extends FunSuite {
         |if 1 then {} else {}
         |func create(n){this}
         |a=create(1)
+        |create(2).n
         |a.n
       """.stripMargin
     val result = runtime.eval(exp)

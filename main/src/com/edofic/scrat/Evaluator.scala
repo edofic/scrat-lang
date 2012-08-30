@@ -49,7 +49,7 @@ class Evaluator(runtime: ScratRuntime) {
         case Nil => throw new ScratInvalidTokenError("got empty list in DotAccess")
         case e :: Nil => apply(e)
         case head :: tail => apply(head) match {
-          case s: SScope => step(tail)(s)
+          case s: SScope => step(tail)(s.unlinked)
           case other => throw new ScratInvalidTypeError("expected scope, got " + other)
         }
       }

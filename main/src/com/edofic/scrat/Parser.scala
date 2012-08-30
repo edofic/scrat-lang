@@ -38,7 +38,7 @@ object Parser extends RegexParsers {
     case id ~ args => FunctionCall(id, args)
   }
 
-  private def value: Parser[Expression] = number | string | functionCall | identifier
+  private def value: Parser[Expression] = number | string | identifier | functionCall
 
   private def exponent: Parser[Expression] = (value | parenExpr) ~ "^" ~ (value | parenExpr) ^^ {
     case a ~ "^" ~ b => Exponent(a, b)

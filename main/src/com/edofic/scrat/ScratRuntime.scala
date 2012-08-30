@@ -19,11 +19,11 @@ object ScratRuntime {
         if (lst.length != arglist.length) {
           throw new ScratInvalidTypeError("expected " + arglist.length + " arguments, but got " + lst.length)
         } else {
-          implicit val closure = new SScope(Some(scope))
+          val closure = new SScope(Some(scope))
           (arglist zip lst) foreach {
             t => closure.put(t._1.id, t._2)
           }
-          body --> eval.apply
+          eval(body)(closure)
         }
       }
       case other => throw new ScratInvalidTypeError("expected list of arguments but got" + other)
