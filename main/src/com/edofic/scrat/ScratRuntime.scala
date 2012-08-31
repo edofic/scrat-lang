@@ -39,6 +39,7 @@ class ScratRuntime {
 
 object StdLib extends SScope(None) {
   val map = Map(
+    ("none" -> None),
     ("pi" -> math.Pi),
     ("e" -> math.E),
     ("ln" -> functions.ln),
