@@ -105,7 +105,7 @@ object Parser extends RegexParsers {
 
   def exprList: Parser[List[Expression]] = rep("\n") ~> repsep(expr, rep1("\n")) <~ rep("\n")
 
-  def block: Parser[List[Expression]] = ("{" ~ rep("\n")) ~> repsep(expr, "\n") <~ (rep("\n") ~ "}")
+  def block: Parser[List[Expression]] = ("{" ~ rep("\n")) ~> repsep(expr, rep("\n")) <~ (rep("\n") ~ "}")
 
   private def functionDef: Parser[FunctionDef] =
     "func" ~ simpleIdentifier ~ ("(" ~> repsep(simpleIdentifier, ",") <~ ")") ~ block ^^ {

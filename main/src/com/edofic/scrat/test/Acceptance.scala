@@ -61,6 +61,11 @@ class Acceptance extends FunSuite {
         |func i(){
         |hi }
         |if 1 then {} else {}
+        |func blanks(a,b){
+        |  c=a+1
+        |
+        |  c+b
+        |}
         |func create(n){this}
         |a=create(1)
         |create(2).n
