@@ -48,7 +48,8 @@ object StdLib extends SScope(None) {
     ("print" -> functions.sprint),
     ("println" -> functions.sprintln),
     ("readln" -> functions.sreadln),
-    ("toNum" -> functions.toNum)
+    ("toNum" -> functions.toNum),
+    ("dir" -> functions.dir)
   )
 
   override def put(key: String, value: Any) {
@@ -94,6 +95,11 @@ object StdLib extends SScope(None) {
       case (s: String) :: Nil => s.toDouble
       case (d: Double) :: Nil => d
       case other => throw ScratInvalidTypeError("expected a string or a double but got " + other)
+    }
+
+    lazy val dir: FunctionVarArg = {
+      case (s: SScope) :: Nil => s.getDecription
+      case other => throw ScratInvalidTypeError("expected a scope::Nil but got " + other)
     }
   }
 
