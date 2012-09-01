@@ -108,8 +108,8 @@ object Parser extends RegexParsers {
   def block: Parser[List[Expression]] = ("{" ~ rep("\n")) ~> repsep(expr, rep("\n")) <~ (rep("\n") ~ "}")
 
   private def functionDef: Parser[FunctionDef] =
-    "func" ~ simpleIdentifier ~ ("(" ~> repsep(simpleIdentifier, ",") <~ ")") ~ block ^^ {
-      case "func" ~ id ~ args ~ body => FunctionDef(id, args, body)
+    "func" ~> opt(simpleIdentifier) ~ ("(" ~> repsep(simpleIdentifier, ",") <~ ")") ~ block ^^ {
+      case id ~ args ~ body => FunctionDef(id, args, body)
     }
 
   def apply(s: String): List[Expression] = parseAll(exprList, s) match {

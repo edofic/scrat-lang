@@ -78,7 +78,7 @@ class Evaluator(runtime: ScratRuntime) {
     case NotEquals(l, r) => (if (apply(l) != apply(r)) 1 else 0): Double
     case FunctionDef(name, args, body) => {
       val fun = ScratRuntime.createFunFromAst(args, body, scope)
-      scope.put(name.id, fun)
+      name foreach (n => scope.put(n.id, fun))
       fun
     }
 
