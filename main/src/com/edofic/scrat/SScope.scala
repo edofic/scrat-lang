@@ -42,5 +42,5 @@ class SScope(val parent: Option[SScope]) {
 
   def getDecription: String = map map {
     t => if (t._2==this) (t._1, "this") else t
-  } map (t=>t._1+" -> "+t._2) mkString("\nObject\n", "\n", "\n/Object\n")
+  } map (t=>t._1+" -> "+t._2) mkString("Object\n", "\n", "")
 }
