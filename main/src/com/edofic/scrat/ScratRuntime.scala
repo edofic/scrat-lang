@@ -35,6 +35,11 @@ class ScratRuntime {
   implicit val globalScope = new SScope(Some(StdLib))
 
   def eval(s: String) = s --> Parser.apply --> evaluator.apply
+
+  def cleanRoomEval(s: String) = {
+    implicit val globalScope = new SScope(Some(StdLib))
+    s --> Parser.apply --> evaluator.apply
+  }
 }
 
 object StdLib extends SScope(None) {
