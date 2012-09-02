@@ -24,7 +24,9 @@ class Evaluator(runtime: ScratRuntime) {
     }
   }
 
-  def apply(e: Expression)(implicit scope: SScope): Any = e match {
+  def apply(e: Expression)(implicit scope: SScope): Any = apply(e, None)(scope)
+
+  def apply(e: Expression, auxScope: Option[SScope])(implicit scope: SScope): Any = e match {
     case Number(n) => n
     case SString(s) => s
     case Add(l, r) => binaryDouble(l, r)(_ + _)
@@ -33,21 +35,26 @@ class Evaluator(runtime: ScratRuntime) {
     case Divide(l, r) => binaryDouble(l, r)(_ / _)
     case Exponent(l, r) => binaryDouble(l, r)(math.pow)
     case Identifier(name) => {
-      scope.get(name) match {
+      val tempScope = if (auxScope.isDefined) auxScope.get else scope
+      tempScope.get(name) match {
         case Some(v) => v
         case _ => throw new ScratSemanticError(name + " not found")
       }
     }
     case ExpList(lst) => lst map apply
-    case FunctionCall(name, args) => scope.get(name.id) match {
-      case Some(f: FunctionVarArg) => f.apply(apply(args))
-      case Some(f: StoredFunction) => f.apply(this, apply(args))
-      case _ => throw new ScratSemanticError("function " + name + "not found")
+    case FunctionCall(name, args) => {
+      val tempScope = if (auxScope.isDefined) auxScope.get else scope
+      tempScope.get(name.id) match {
+        case Some(f: FunctionVarArg) => f.apply(apply(args))
+        case Some(f: StoredFunction) => f.apply(this, apply(args))
+        case _ => throw new ScratSemanticError("function " + name + "not found")
+      }
     }
     case DotAccess(list) => {
+      val outerScope = scope
       def step(list: List[Expression])(implicit scope: SScope): Any = list match {
         case Nil => throw new ScratInvalidTokenError("got empty list in DotAccess")
-        case e :: Nil => apply(e)
+        case e :: Nil => apply(e, Some(scope))(outerScope)
         case head :: tail => apply(head) match {
           case s: SScope => step(tail)(s.unlinked)
           case other => throw new ScratInvalidTypeError("expected scope, got " + other)

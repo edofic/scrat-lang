@@ -1,0 +1,13 @@
+func llist(head, tail) {
+    func cons(e) {
+        llist(e, this)
+    }
+    
+    func get(i) {
+        if i==0 then head else tail.get(i-1)
+    }
+    
+    this
+}
+
+lnil = llist(none, none)
