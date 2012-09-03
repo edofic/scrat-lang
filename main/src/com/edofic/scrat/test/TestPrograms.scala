@@ -77,7 +77,81 @@ object TestPrograms {
       """
         |func apply(n, f){ f(n) }
         |apply(2, func (x) {x*2} )
-      """.stripMargin, 4)
+      """.stripMargin, 4),
+
+    ("llist.scrat and some tests",
+      """
+        | func llist(head, tail) {
+        |    func cons(e) {
+        |        llist(e, this)
+        |    }
+        |
+        |    func get(i) {
+        |        if i==0 then head else tail.get(i-1)
+        |    }
+        |
+        |    func iterate(f) {
+        |        if head!=none then f(head) else {}
+        |        if tail!=none then tail.iterate(f) else {}
+        |        none
+        |    }
+        |
+        |    func iterateRight(f) {
+        |        if tail!=none then tail.iterateRight(f) else {}
+        |        if head!=none then f(head) else {}
+        |        none
+        |    }
+        |
+        |    func filter(p) {
+        |        obj = this
+        |        nl = none
+        |        iterateRight(func (e){
+        |            if p(e) then obj.nl=llist(e, obj.nl) else {}
+        |        })
+        |        nl
+        |    }
+        |
+        |    func map(f) {
+        |        obj = this
+        |        nl = none
+        |        iterateRight(func (e){
+        |            obj.nl = llist(f(e), obj.nl)
+        |        })
+        |        nl
+        |    }
+        |
+        |    func fold(start, f){
+        |        obj = this
+        |        iterate(func (e){
+        |            obj.start = f(obj.start, e)
+        |        })
+        |        start
+        |    }
+        |
+        |    func foldRight(start, f){
+        |        obj = this
+        |        iterateRight(func (e){
+        |            obj.start = f(obj.start, e)
+        |        })
+        |        start
+        |    }
+        |
+        |    func reduce(f){
+        |        tail.fold(head, f)
+        |    }
+        |
+        |    func reduceRight(f){
+        |        tail.foldRight(head, f)
+        |    }
+        |
+        |    this
+        |}
+        |
+        |lnil = llist(none, none)
+        |l = llist(1, llist(2, llist(1, llist(2, llist(3, llist(1, llist(4, lnil)))))))
+        |func sum(a,b){a+b}
+        |l.reduce(sum) == l.reduceRight(sum)
+      """.stripMargin, 1)
   )
 
 
