@@ -10,7 +10,7 @@ import Util.Implicits._
  * Date: 8/25/12
  * Time: 10:15 PM
  */
-class Evaluator(runtime: ScratRuntime) {
+class Evaluator {
   private def binaryDouble(l: Expression, r: Expression)(f: (Double, Double) => Double)
                           (implicit scope: SScope): Double = (apply(l), apply(r)) match {
     case (a: Double, b: Double) => f(a, b)

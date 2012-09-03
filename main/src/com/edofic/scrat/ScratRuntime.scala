@@ -31,7 +31,7 @@ object ScratRuntime {
 }
 
 class ScratRuntime {
-  val evaluator = new Evaluator(this)
+  val evaluator = new Evaluator
   implicit val globalScope = new SScope(Some(StdLib))
 
   def eval(s: String) = s --> Parser.apply --> evaluator.apply
