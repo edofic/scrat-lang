@@ -42,12 +42,11 @@ class Evaluator {
       }
     }
     case ExpList(lst) => lst map apply
-    case FunctionCall(name, args) => {
-      val tempScope = if (auxScope.isDefined) auxScope.get else scope
-      tempScope.get(name.id) match {
-        case Some(f: FunctionVarArg) => f.apply(apply(args))
-        case Some(f: StoredFunction) => f.apply(this, apply(args))
-        case _ => throw new ScratSemanticError("function " + name + "not found")
+    case FunctionCall(f, args) => {
+      apply(f, auxScope) match {
+        case f: FunctionVarArg => f.apply(apply(args))
+        case f: StoredFunction => f.apply(this, apply(args))
+        case _ => throw new ScratSemanticError(f + " is not a function")
       }
     }
     case DotAccess(list) => {
