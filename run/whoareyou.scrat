@@ -1,3 +1,0 @@
-print("who are you: ")
-name = readln()
-print("hello", name)

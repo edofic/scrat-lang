@@ -1,4 +1,0 @@
-print("enter passcode")
-pass = "password"
-state = if readln()==pass then "granted" else "denied"
-println("access", state)

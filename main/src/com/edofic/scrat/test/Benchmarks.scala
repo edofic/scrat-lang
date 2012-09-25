@@ -3,9 +3,6 @@ package com.edofic.scrat.test
 import testing.Benchmark
 import com.edofic.scrat._
 import scala.Some
-import actors.remote.{JavaSerializer, Serializer}
-import java.io.{ByteArrayOutputStream, FileOutputStream, ObjectOutputStream}
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream
 
 /**
  * User: andraz
@@ -16,7 +13,7 @@ object Benchmarks {
   val program = TestPrograms.tuples(11)._2
   val runtime = new ScratRuntime
   val evaluator = new Evaluator
-  implicit val globalScope =  new SScope(Some(StdLib))
+  implicit val globalScope = new SScope(Some(StdLib))
   val parser = Parser
   val tree = parser(program)
 
@@ -29,12 +26,11 @@ object Benchmarks {
   }
 
 
-
-  object ParserBench extends Benchmark{
+  object ParserBench extends Benchmark {
     def run = parser(program)
   }
 
-  object EvaluatorBench extends Benchmark{
+  object EvaluatorBench extends Benchmark {
     def run = evaluator(tree)
   }
 

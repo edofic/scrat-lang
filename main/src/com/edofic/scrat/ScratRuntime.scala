@@ -2,7 +2,6 @@ package com.edofic.scrat
 
 import com.edofic.scrat.Util.Exceptions._
 import Util.Implicits._
-import com.edofic.scrat.Tokens.{Identifier, Expression}
 
 /**
  * User: andraz
@@ -11,23 +10,6 @@ import com.edofic.scrat.Tokens.{Identifier, Expression}
  */
 object ScratRuntime {
   type FunctionVarArg = Any => Any
-  type StoredFunction = (Evaluator, Any) => Any
-
-  def createFunFromAst(arglist: List[Identifier], body: List[Expression], scope: SScope): StoredFunction =
-    (eval: Evaluator, args: Any) => args match {
-      case lst: List[Any] => {
-        if (lst.length != arglist.length) {
-          throw new ScratInvalidTypeError("expected " + arglist.length + " arguments, but got " + lst.length)
-        } else {
-          val closure = new SScope(Some(scope))
-          (arglist zip lst) foreach {
-            t => closure.put(t._1.id, t._2)
-          }
-          eval(body)(closure)
-        }
-      }
-      case other => throw new ScratInvalidTypeError("expected list of arguments but got" + other)
-    }
 }
 
 class ScratRuntime {

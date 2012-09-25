@@ -24,6 +24,22 @@ class Evaluator {
     }
   }
 
+  def createFunFromAst(arglist: List[Identifier], body: List[Expression], scope: SScope): FunctionVarArg =
+    (args: Any) => args match {
+      case lst: List[Any] => {
+        if (lst.length != arglist.length) {
+          throw new ScratInvalidTypeError("expected " + arglist.length + " arguments, but got " + lst.length)
+        } else {
+          val closure = new SScope(Some(scope))
+          (arglist zip lst) foreach {
+            t => closure.put(t._1.id, t._2)
+          }
+          apply(body)(closure)
+        }
+      }
+      case other => throw new ScratInvalidTypeError("expected list of arguments but got" + other)
+    }
+
   def apply(e: Expression)(implicit scope: SScope): Any = apply(e, None)(scope)
 
   def apply(e: Expression, auxScope: Option[SScope])(implicit scope: SScope): Any = e match {
@@ -46,7 +62,6 @@ class Evaluator {
       val tempScope = if (auxScope.isDefined) auxScope.get else scope
       tempScope.get(name.id) match {
         case Some(f: FunctionVarArg) => f.apply(apply(args))
-        case Some(f: StoredFunction) => f.apply(this, apply(args))
         case _ => throw new ScratSemanticError("function " + name + "not found")
       }
     }
@@ -84,7 +99,7 @@ class Evaluator {
     case Equals(l, r) => (if (apply(l) == apply(r)) 1 else 0): Double
     case NotEquals(l, r) => (if (apply(l) != apply(r)) 1 else 0): Double
     case FunctionDef(name, args, body) => {
-      val fun = ScratRuntime.createFunFromAst(args, body, scope)
+      val fun = createFunFromAst(args, body, scope)
       name foreach (n => scope.put(n.id, fun))
       fun
     }
