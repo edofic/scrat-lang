@@ -1,0 +1,8 @@
+func sqrt(n){
+    func iter(y){(y+n/y)/2}
+    func isOk(y){ (y^2-n)^2 < 0.001 }
+    func rep(y){
+        if isOk(y) then y else rep(iter(y))
+    }
+    rep(1)
+}

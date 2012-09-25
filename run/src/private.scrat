@@ -1,0 +1,9 @@
+func private(n) {
+    that = this
+    func create() { 
+        func get() { that.n }
+        func set(v) { that.n = v }
+        this
+    }
+    create()
+}

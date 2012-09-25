@@ -1,0 +1,21 @@
+func stack(){
+    func node(e,next) {this}
+    
+    obj = this
+    top = none
+    
+    func create() {
+        func push(e) {
+            obj.top = node(e, top)
+        }
+        
+        func pop() {
+            e = top.e
+            obj.top = top.next
+            e
+        }
+        
+        this
+    }
+    create()
+}

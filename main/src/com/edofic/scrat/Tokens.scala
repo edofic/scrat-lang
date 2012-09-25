@@ -27,7 +27,7 @@ object Tokens {
 
   case class ExpList(lst: List[Expression]) extends Expression
 
-  case class FunctionCall(name: Identifier, args: ExpList) extends Expression
+  case class FunctionCall(function: Expression, args: ExpList) extends Expression
 
   case class Assignment(to: DotAccess, from: Expression) extends Expression
 
