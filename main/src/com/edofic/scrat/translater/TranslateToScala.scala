@@ -32,7 +32,7 @@ object TranslateToScala {
     case Identifier(name) => String.format("getId(%s)", name)
     case ExpList(lst) => (lst map apply) mkString ", "
     case FunctionCall(name, args) => String.format("applyFunc(%s, %s)",
-      "\"" + name.id + "\"", apply(args))
+      "\"" + name + "\"", apply(args))
 
     case t => throw new ScratInvalidTokenError(t + " not implemented in evaluator")
   }

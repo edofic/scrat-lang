@@ -71,7 +71,7 @@ object TestPrograms {
         |o = object()
         |o.get = func (n) { if n==0 then n else o.get(n-1) }
         |o.get(2)
-      """.stripMargin, 0 toDouble),
+      """.stripMargin, 0.toDouble),
 
     ("higher order functions",
       """
@@ -151,8 +151,21 @@ object TestPrograms {
         |l = llist(1, llist(2, llist(1, llist(2, llist(3, llist(1, llist(4, lnil)))))))
         |func sum(a,b){a+b}
         |l.reduce(sum) == l.reduceRight(sum)
+      """.stripMargin, 1),
+
+    ("privates",
+      """
+        |func private(n) {
+        |    that = this
+        |    func (){
+        |        func get() { that.n }
+        |        func set(v) { that.n = v }
+        |        this
+        |    }()
+        |}
+        |o = private(0)
+        |o.set(1)
+        |o.get()
       """.stripMargin, 1)
   )
-
-
 }
