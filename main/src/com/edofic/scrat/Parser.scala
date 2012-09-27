@@ -1,6 +1,6 @@
 package com.edofic.scrat
 
-import util.parsing.combinator.RegexParsers
+import util.parsing.combinator.JavaTokenParsers
 import com.edofic.scrat.Util.Exceptions.ScratSyntaxError
 
 /**
@@ -8,17 +8,17 @@ import com.edofic.scrat.Util.Exceptions.ScratSyntaxError
  * Date: 8/25/12
  * Time: 10:15 PM
  */
-object Parser extends RegexParsers {
+object Parser extends JavaTokenParsers {
 
   import Tokens._
 
   override protected val whiteSpace = """[ \t\x0B\f\r]+""".r
 
-  private def number: Parser[Number] = """\d+\.?\d*""".r ^^ {
+  private def number: Parser[Number] = decimalNumber ^^ {
     s => Number(s.toDouble)
   }
 
-  private def simpleIdentifier: Parser[Identifier] = "[a-zA-Z]\\w*".r ^^ {
+  private def simpleIdentifier: Parser[Identifier] = ident ^^ {
     s => Identifier(s)
   }
 
