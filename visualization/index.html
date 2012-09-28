@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <!-- jQuery -->
+    <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+    <!--  The Raphael JavaScript library for vector graphics display  -->
+    <script type="text/javascript" src="js/raphael-min.js"></script>
+    <!--  Dracula  -->
+    <!--  An extension of Raphael for connecting shapes -->
+    <script type="text/javascript" src="js/dracula_graffle.js"></script>
+    <!--  Graphs  -->
+    <script type="text/javascript" src="js/dracula_graph.js"></script>
+    <script type="text/javascript" src="js/dracula_algorithms.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+    <script type="text/javascript">
+
+var redraw;
+
+window.onload = function() {
+    var width = $(document).width();
+    var height = $(document).height() - 100;
+    
+    var g = new Graph();
+    
+    for( var i=0, l=data.length; i<l; i++ ) {
+        g.addEdge(data[i].a, data[i].b, {"directed":true});
+    }
+    
+    var layouter = new Graph.Layout.Spring(g);
+    var renderer = new Graph.Renderer.Raphael('canvas', g, width, height);
+
+    redraw = function() {
+        layouter.layout();
+        renderer.draw();
+    };
+};
+    
+    </script>
+  </head>
+  <body>
+    <div id="canvas"></div>
+    Looks ugly? Hit <button id="redraw" onclick="redraw();">redraw</button>!<br>
+  </body>
+</html>
