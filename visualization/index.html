@@ -10,31 +10,7 @@
     <!--  Graphs  -->
     <script type="text/javascript" src="js/dracula_graph.js"></script>
     <script type="text/javascript" src="js/dracula_algorithms.js"></script>
-    <script type="text/javascript" src="https://raw.github.com/edofic/scrat-lang/master/visualization/data.js"></script>
-    <script type="text/javascript">
-
-var redraw;
-
-window.onload = function() {
-    var width = $(document).width();
-    var height = $(document).height() - 100;
-    
-    var g = new Graph();
-    
-    for( var i=0, l=data.length; i<l; i++ ) {
-        g.addEdge(data[i].a, data[i].b, {"directed":true});
-    }
-    
-    var layouter = new Graph.Layout.Spring(g);
-    var renderer = new Graph.Renderer.Raphael('canvas', g, width, height);
-
-    redraw = function() {
-        layouter.layout();
-        renderer.draw();
-    };
-};
-    
-    </script>
+    <script type="text/javascript" src="parser_graph.js"></script>
   </head>
   <body>
     <div id="canvas"></div>
