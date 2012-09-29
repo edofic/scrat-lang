@@ -1,6 +1,6 @@
 package com.edofic.scrat
 
-import util.parsing.combinator.JavaTokenParsers
+import util.parsing.combinator.{PackratParsers, JavaTokenParsers}
 import com.edofic.scrat.Util.Exceptions.ScratSyntaxError
 
 /**
@@ -8,45 +8,45 @@ import com.edofic.scrat.Util.Exceptions.ScratSyntaxError
  * Date: 8/25/12
  * Time: 10:15 PM
  */
-object Parser extends JavaTokenParsers {
+object Parser extends JavaTokenParsers with PackratParsers {
 
   import Tokens._
 
   override protected val whiteSpace = """[ \t\x0B\f\r]+""".r
 
-  private def number: Parser[Number] = decimalNumber ^^ {
+  private lazy val number: PackratParser[Number] = decimalNumber ^^ {
     s => Number(s.toDouble)
   }
 
-  private def simpleIdentifier: Parser[Identifier] = ident ^^ {
+  private lazy val simpleIdentifier: PackratParser[Identifier] = ident ^^ {
     s => Identifier(s)
   }
 
-  private def identifier: Parser[DotAccess] = rep1sep((functionCall | simpleIdentifier), ".") ^^ DotAccess.apply
+  private lazy val identifier: PackratParser[DotAccess] = rep1sep((functionCall | simpleIdentifier), ".") ^^ DotAccess.apply
 
-  private def string: Parser[SString] = "\".*?\"".r ^^ {
+  private lazy val string: PackratParser[SString] = "\".*?\"".r ^^ {
     s => SString(s.substring(1, s.length - 1))
   }
 
-  private def commaList: Parser[ExpList] = repsep(expr, ",") ^^ {
+  private lazy val commaList: PackratParser[ExpList] = repsep(expr, ",") ^^ {
     lst => ExpList(lst)
   }
 
-  private def arglist: Parser[ExpList] = "(" ~> commaList <~ ")"
+  private lazy val arglist: PackratParser[ExpList] = "(" ~> commaList <~ ")"
 
-  private def functionCall: Parser[FunctionCall] = simpleIdentifier ~ arglist ^^ {
+  private lazy val functionCall: PackratParser[FunctionCall] = simpleIdentifier ~ arglist ^^ {
     case id ~ args => FunctionCall(id, args)
   }
 
-  private def value: Parser[Expression] = number | string | identifier | functionCall
+  private lazy val value: PackratParser[Expression] = number | string | identifier | functionCall
 
-  private def exponent: Parser[Expression] = (value | parenExpr) ~ "^" ~ (value | parenExpr) ^^ {
+  private lazy val exponent: PackratParser[Expression] = (value | parenExpr) ~ "^" ~ (value | parenExpr) ^^ {
     case a ~ "^" ~ b => Exponent(a, b)
   }
 
-  private def factor: Parser[Expression] = parenExpr | exponent | value
+  private lazy val factor: PackratParser[Expression] = parenExpr | exponent | value
 
-  private def term: Parser[Expression] = factor ~ rep(("*" | "/") ~ factor) ^^ {
+  private lazy val term: PackratParser[Expression] = factor ~ rep(("*" | "/") ~ factor) ^^ {
     case head ~ tail => {
       var tree: Expression = head
       tail.foreach {
@@ -57,7 +57,7 @@ object Parser extends JavaTokenParsers {
     }
   }
 
-  private def sum: Parser[Expression] = term ~ rep(("+" | "-") ~ term) ^^ {
+  private lazy val sum: PackratParser[Expression] = term ~ rep(("+" | "-") ~ term) ^^ {
     case head ~ tail => {
       var tree: Expression = head
       tail.foreach {
@@ -68,11 +68,11 @@ object Parser extends JavaTokenParsers {
     }
   }
 
-  private def assignment: Parser[Assignment] = identifier ~ "=" ~ expr ^^ {
+  private lazy val assignment: PackratParser[Assignment] = identifier ~ "=" ~ expr ^^ {
     case id ~ "=" ~ exp => Assignment(id, exp)
   }
 
-  private def ifThenElse: Parser[IfThenElse] = "if" ~ expr ~ "then" ~ (expr | block) ~ "else" ~ (expr | block) ^^ {
+  private lazy val ifThenElse: PackratParser[IfThenElse] = "if" ~ expr ~ "then" ~ (expr | block) ~ "else" ~ (expr | block) ^^ {
     case "if" ~ predicate ~ "then" ~ then ~ "else" ~ els => {
       val thenBlock = then match {
         case e: Expression => List(e)
@@ -86,7 +86,7 @@ object Parser extends JavaTokenParsers {
     }
   }
 
-  private def equality: Parser[Expression] = noEqExpr ~ rep(("==" | "!=") ~ noEqExpr) ^^ {
+  private lazy val equality: PackratParser[Expression] = noEqExpr ~ rep(("==" | "!=") ~ noEqExpr) ^^ {
     case head ~ tail => {
       var tree: Expression = head
       tail.foreach {
@@ -97,17 +97,17 @@ object Parser extends JavaTokenParsers {
     }
   }
 
-  private def noEqExpr: Parser[Expression] = ifThenElse | assignment | sum
+  private lazy val noEqExpr: PackratParser[Expression] = ifThenElse | assignment | sum
 
-  private def expr: Parser[Expression] = functionDef | equality | noEqExpr
+  private lazy val expr: PackratParser[Expression] = functionDef | equality | noEqExpr
 
-  private def parenExpr: Parser[Expression] = "(" ~> expr <~ ")"
+  private lazy val parenExpr: PackratParser[Expression] = "(" ~> expr <~ ")"
 
-  def exprList: Parser[List[Expression]] = rep("\n") ~> repsep(expr, rep1("\n")) <~ rep("\n")
+  private lazy val exprList: PackratParser[List[Expression]] = rep("\n") ~> repsep(expr, rep1("\n")) <~ rep("\n")
 
-  def block: Parser[List[Expression]] = ("{" ~ rep("\n")) ~> repsep(expr, rep("\n")) <~ (rep("\n") ~ "}")
+  private lazy val block: PackratParser[List[Expression]] = ("{" ~ rep("\n")) ~> repsep(expr, rep("\n")) <~ (rep("\n") ~ "}")
 
-  private def functionDef: Parser[Expression] =
+  private lazy val functionDef: PackratParser[Expression] =
     "func" ~> opt(simpleIdentifier) ~ ("(" ~> repsep(simpleIdentifier, ",") <~ ")") ~ block ~ opt(arglist) ^^ {
       case id ~ args ~ body ~ params => {
         val f = FunctionDef(id, args, body)
