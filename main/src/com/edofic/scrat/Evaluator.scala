@@ -72,7 +72,7 @@ class Evaluator {
       val outerScope = scope
       def step(list: List[Expression])(implicit scope: SScope): Any = list match {
         case Nil => throw new ScratInvalidTokenError("got empty list in DotAccess")
-        case e :: Nil => apply(e, Some(scope))(outerScope)
+        case elem :: Nil => apply(elem, Some(scope))(outerScope)
         case head :: tail => apply(head) match {
           case s: SScope => step(tail)(s.unlinked)
           case other => throw new ScratInvalidTypeError("expected scope, got " + other)
@@ -83,7 +83,7 @@ class Evaluator {
     case Assignment(target, exp) => {
       val e = apply(exp)
       val targetScope = target.lst match {
-        case e :: Nil => scope
+        case _ :: Nil => scope
         case lst => lst.init --> apply match {
           case s: SScope => s
           case other => throw new ScratInvalidTypeError("expected scope, got " + other)
@@ -100,13 +100,15 @@ class Evaluator {
       case other => throw new ScratInvalidTypeError("expected a number, got " + other)
     }
 
-    case Equality(op, l, r) => op match {
-      case |== => apply(l) == apply(r) toDouble
-      case |!= => apply(l) != apply(r) toDouble
-      case |< => binaryDouble(l, r)(_ < _ toDouble)
-      case |> => binaryDouble(l, r)(_ > _ toDouble)
-      case |<= => binaryDouble(l, r)(_ <= _ toDouble)
-      case |>= => binaryDouble(l, r)(_ >= _ toDouble)
+    case Equality(op, l, r) => {
+      op match {
+        case Equality.|== => (apply(l) == apply(r)).toDouble
+        case Equality.|!= => (apply(l) != apply(r)).toDouble
+        case Equality.|< => binaryDouble(l, r)(_ < _ toDouble)
+        case Equality.|> => binaryDouble(l, r)(_ > _ toDouble)
+        case Equality.|<= => binaryDouble(l, r)(_ <= _ toDouble)
+        case Equality.|>= => binaryDouble(l, r)(_ >= _ toDouble)
+      }
     }
 
     case FunctionDef(name, args, body) => {

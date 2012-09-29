@@ -11,8 +11,9 @@ import com.edofic.scrat.ScratRuntime
 class Acceptance extends FunSuite {
   val runtime = new ScratRuntime
 
-  def testProgramTuple(t: Tuple3[String, String, Any]) =
+  def testProgramTuple(t: (String, String, Any)) {
     test(t._1)(assert(runtime.cleanRoomEval(t._2) === t._3))
+  }
 
   TestPrograms.tuples foreach testProgramTuple
 }

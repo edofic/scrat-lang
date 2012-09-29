@@ -6,7 +6,7 @@ package com.edofic.scrat.test
  * Time: 12:32
  */
 object TestPrograms {
-  val tuples: List[Tuple3[String, String, Any]] = List(
+  val tuples: List[(String, String, Any)] = List(
     ("math expressions", "(1+3)*5/2^(5-2)", (1 + 3) * 5 / math.pow(2, (5 - 2))),
 
     ("strings", "\"hi\"", "hi"),

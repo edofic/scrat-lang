@@ -17,7 +17,9 @@ object Interpreter {
     }
   }
 
-  def runFile(path: String) = interpretFile(path, new ScratRuntime)
+  def runFile(path: String) {
+    interpretFile(path, new ScratRuntime)
+  }
 
   def interpretFile(path: String, runtime: ScratRuntime) {
     if (new File(path).canRead) {

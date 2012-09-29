@@ -27,11 +27,15 @@ object Benchmarks {
 
 
   object ParserBench extends Benchmark {
-    def run = parser(program)
+    def run() {
+      parser(program)
+    }
   }
 
   object EvaluatorBench extends Benchmark {
-    def run = evaluator(tree)
+    def run() {
+      evaluator(tree)
+    }
   }
 
 }
