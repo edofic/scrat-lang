@@ -47,24 +47,16 @@ object Parser extends JavaTokenParsers with PackratParsers {
   private lazy val factor: PackratParser[Expression] = parenExpr | exponent | value
 
   private lazy val term: PackratParser[Expression] = factor ~ rep(("*" | "/") ~ factor) ^^ {
-    case head ~ tail => {
-      var tree: Expression = head
-      tail.foreach {
-        case "*" ~ e => tree = Multiply(tree, e)
-        case "/" ~ e => tree = Divide(tree, e)
-      }
-      tree
+    case head ~ tail => tail.foldLeft(head){
+      case (tree, "*" ~ e) => Multiply(tree, e)
+      case (tree, "/" ~ e) => Divide(tree, e)
     }
   }
 
   private lazy val sum: PackratParser[Expression] = term ~ rep(("+" | "-") ~ term) ^^ {
-    case head ~ tail => {
-      var tree: Expression = head
-      tail.foreach {
-        case "+" ~ e => tree = Add(tree, e)
-        case "-" ~ e => tree = Subtract(tree, e)
-      }
-      tree
+    case head ~ tail => tail.foldLeft(head){
+      case (tree, "+" ~ e) => Add(tree, e)
+      case (tree, "-" ~ e) => Subtract(tree, e)
     }
   }
 
@@ -87,14 +79,10 @@ object Parser extends JavaTokenParsers with PackratParsers {
   }
 
   private lazy val equality: PackratParser[Expression] = noEqExpr ~ rep(("==" | "!=") ~ noEqExpr) ^^ {
-    case head ~ tail => {
-      var tree: Expression = head
-      tail.foreach {
-        case "==" ~ e => tree = Equals(tree, e)
-        case "!=" ~ e => tree = NotEquals(tree, e)
+    case head ~ tail => tail.foldLeft(head){
+        case (tree, "==" ~ e) => Equals(tree, e)
+        case (tree, "!=" ~ e) => NotEquals(tree, e)
       }
-      tree
-    }
   }
 
   private lazy val noEqExpr: PackratParser[Expression] = ifThenElse | assignment | sum
