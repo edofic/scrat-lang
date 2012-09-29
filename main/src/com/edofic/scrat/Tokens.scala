@@ -33,12 +33,28 @@ object Tokens {
 
   case class IfThenElse(predicate: Expression, then: List[Expression], els: List[Expression]) extends Expression
 
-  case class Equals(left: Expression, right: Expression) extends Expression
-
-  case class NotEquals(left: Expression, right: Expression) extends Expression
+  case class Equality(op: Equality.Operator, left: Expression, right: Expression) extends Expression
 
   case class FunctionDef(name: Option[Identifier], args: List[Identifier], body: List[Expression]) extends Expression
 
   case class DotAccess(lst: List[Expression]) extends Expression
+
+  object Equality {
+
+    sealed trait Operator
+
+    case object |== extends Operator
+
+    case object |!= extends Operator
+
+    case object |< extends Operator
+
+    case object |> extends Operator
+
+    case object |>= extends Operator
+
+    case object |<= extends Operator
+
+  }
 
 }

@@ -2,6 +2,7 @@ package com.edofic.scrat
 
 import util.parsing.combinator.{PackratParsers, JavaTokenParsers}
 import com.edofic.scrat.Util.Exceptions.ScratSyntaxError
+import com.edofic.scrat.Tokens.Equality._
 
 /**
  * User: andraz
@@ -47,14 +48,14 @@ object Parser extends JavaTokenParsers with PackratParsers {
   private lazy val factor: PackratParser[Expression] = parenExpr | exponent | value
 
   private lazy val term: PackratParser[Expression] = factor ~ rep(("*" | "/") ~ factor) ^^ {
-    case head ~ tail => tail.foldLeft(head){
+    case head ~ tail => tail.foldLeft(head) {
       case (tree, "*" ~ e) => Multiply(tree, e)
       case (tree, "/" ~ e) => Divide(tree, e)
     }
   }
 
   private lazy val sum: PackratParser[Expression] = term ~ rep(("+" | "-") ~ term) ^^ {
-    case head ~ tail => tail.foldLeft(head){
+    case head ~ tail => tail.foldLeft(head) {
       case (tree, "+" ~ e) => Add(tree, e)
       case (tree, "-" ~ e) => Subtract(tree, e)
     }
@@ -78,12 +79,19 @@ object Parser extends JavaTokenParsers with PackratParsers {
     }
   }
 
-  private lazy val equality: PackratParser[Expression] = noEqExpr ~ rep(("==" | "!=") ~ noEqExpr) ^^ {
-    case head ~ tail => tail.foldLeft(head){
-        case (tree, "==" ~ e) => Equals(tree, e)
-        case (tree, "!=" ~ e) => NotEquals(tree, e)
+  private lazy val equality: PackratParser[Expression] =
+    noEqExpr ~ rep("==|!=|<=|>=|<|>".r ~ noEqExpr) ^^ {
+      case head ~ tail => tail.foldLeft(head) {
+        case (tree, op ~ e) => Equality(op match {
+          case "==" => |==
+          case "!=" => |!=
+          case "<" => |<
+          case ">" => |>
+          case "<=" => |<=
+          case ">=" => |>=
+        }, tree, e)
       }
-  }
+    }
 
   private lazy val noEqExpr: PackratParser[Expression] = ifThenElse | assignment | sum
 

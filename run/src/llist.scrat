@@ -65,3 +65,8 @@ func llist(head, tail) {
 }
 
 lnil = llist(none, none)
+
+func range(n){
+    func step(n, list){ if n==0 then list else step(n-1, llist(n, list)) }
+    step(n, lnil)   
+}

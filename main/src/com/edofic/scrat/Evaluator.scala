@@ -17,6 +17,10 @@ class Evaluator {
     case other => throw new ScratInvalidTypeError("expected two doubles, got " + other)
   }
 
+  private implicit def boolean2double(p: Boolean) = new AnyRef {
+    def toDouble: Double = if (p) 1 else 0
+  }
+
   def apply(e: List[Expression])(implicit scope: SScope): Any = {
     (e map apply).lastOption match {
       case Some(a) => a
@@ -95,8 +99,16 @@ class Evaluator {
       case d: Double => if (d != 0) apply(then) else apply(els)
       case other => throw new ScratInvalidTypeError("expected a number, got " + other)
     }
-    case Equals(l, r) => (if (apply(l) == apply(r)) 1 else 0): Double
-    case NotEquals(l, r) => (if (apply(l) != apply(r)) 1 else 0): Double
+
+    case Equality(op, l, r) => op match {
+      case |== => apply(l) == apply(r) toDouble
+      case |!= => apply(l) != apply(r) toDouble
+      case |< => binaryDouble(l, r)(_ < _ toDouble)
+      case |> => binaryDouble(l, r)(_ > _ toDouble)
+      case |<= => binaryDouble(l, r)(_ <= _ toDouble)
+      case |>= => binaryDouble(l, r)(_ >= _ toDouble)
+    }
+
     case FunctionDef(name, args, body) => {
       val fun = createFunFromAst(args, body, scope)
       name foreach (n => scope.put(n.id, fun))
