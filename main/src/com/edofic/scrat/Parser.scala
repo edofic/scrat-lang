@@ -36,8 +36,10 @@ object Parser extends JavaTokenParsers with PackratParsers {
 
   private lazy val arglist: PackratParser[ExpList] = "(" ~> commaList <~ ")"
 
-  private lazy val functionCall: PackratParser[FunctionCall] = simpleIdentifier ~ arglist ^^ {
-    case id ~ args => FunctionCall(id, args)
+  private lazy val functionCall: PackratParser[FunctionCall] = simpleIdentifier ~ rep1(arglist) ^^ {
+    case id ~ args => args.tail.foldLeft(FunctionCall(id, args.head)) {
+      case (tree, elem) => FunctionCall(tree, elem)
+    }
   }
 
   private lazy val value: PackratParser[Expression] = number | string | identifier | functionCall
@@ -105,9 +107,13 @@ object Parser extends JavaTokenParsers with PackratParsers {
   private lazy val block: PackratParser[List[Expression]] = ("{" ~ rep("\n")) ~> repsep(expr, rep("\n")) <~ (rep("\n") ~ "}")
 
   private lazy val functionDef: PackratParser[Expression] =
-    "func" ~> opt(simpleIdentifier) ~ ("(" ~> repsep(simpleIdentifier, ",") <~ ")") ~ block ~ opt(arglist) ^^ {
+    "func" ~> opt(simpleIdentifier) ~ rep1("(" ~> repsep(simpleIdentifier, ",") <~ ")") ~ block ~ opt(arglist) ^^ {
       case id ~ args ~ body ~ params => {
-        val f = FunctionDef(id, args, body)
+        def build(argListList: List[List[Identifier]]): List[Expression] = argListList match {
+          case Nil => body
+          case head :: tail => List(FunctionDef(None, head, build(tail)))
+        }
+        val f = FunctionDef(id, args.head, build(args.tail))
         if (params.isEmpty) f else FunctionCall(f, params.get)
       }
     }
