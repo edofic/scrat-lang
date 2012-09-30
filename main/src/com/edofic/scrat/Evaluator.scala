@@ -4,6 +4,7 @@ import com.edofic.scrat.Util.Exceptions._
 import Tokens._
 import ScratRuntime._
 import Util.Implicits._
+import BinaryOp._
 
 /**
  * User: andraz
@@ -49,11 +50,16 @@ class Evaluator {
   def apply(e: Expression, auxScope: Option[SScope])(implicit scope: SScope): Any = e match {
     case Number(n) => n
     case SString(s) => s
-    case Add(l, r) => binaryDouble(l, r)(_ + _)
-    case Subtract(l, r) => binaryDouble(l, r)(_ - _)
-    case Multiply(l, r) => binaryDouble(l, r)(_ * _)
-    case Divide(l, r) => binaryDouble(l, r)(_ / _)
-    case Exponent(l, r) => binaryDouble(l, r)(math.pow)
+    case BinaryOp(op, l, r) => {
+      val bin = binaryDouble(l, r) _
+      op match {
+        case Add => bin(_ + _)
+        case Subtract => bin(_ - _)
+        case Multiply => bin(_ * _)
+        case Divide => bin(_ / _)
+        case Exponent => bin(math.pow)
+      }
+    }
     case Identifier(name) => {
       val tempScope = if (auxScope.isDefined) auxScope.get else scope
       tempScope.get(name) match {

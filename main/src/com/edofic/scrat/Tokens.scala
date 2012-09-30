@@ -15,15 +15,7 @@ object Tokens {
 
   case class SString(s: String) extends Expression
 
-  case class Add(left: Expression, right: Expression) extends Expression
-
-  case class Subtract(left: Expression, right: Expression) extends Expression
-
-  case class Multiply(left: Expression, right: Expression) extends Expression
-
-  case class Divide(left: Expression, right: Expression) extends Expression
-
-  case class Exponent(left: Expression, right: Expression) extends Expression
+  case class BinaryOp(op: BinaryOp.Binary, left: Expression, right: Expression) extends Expression
 
   case class ExpList(lst: List[Expression]) extends Expression
 
@@ -54,6 +46,22 @@ object Tokens {
     case object |>= extends Operator
 
     case object |<= extends Operator
+
+  }
+
+  object BinaryOp {
+
+    sealed trait Binary
+
+    case object Add extends Binary
+
+    case object Subtract extends Binary
+
+    case object Multiply extends Binary
+
+    case object Divide extends Binary
+
+    case object Exponent extends Binary
 
   }
 

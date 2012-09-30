@@ -3,6 +3,7 @@ package com.edofic.scrat
 import util.parsing.combinator.{PackratParsers, JavaTokenParsers}
 import com.edofic.scrat.Util.Exceptions.ScratSyntaxError
 import com.edofic.scrat.Tokens.Equality._
+import com.edofic.scrat.Tokens.BinaryOp._
 
 /**
  * User: andraz
@@ -42,22 +43,22 @@ object Parser extends JavaTokenParsers with PackratParsers {
   private lazy val value: PackratParser[Expression] = number | string | identifier | functionCall
 
   private lazy val exponent: PackratParser[Expression] = (value | parenExpr) ~ "^" ~ (value | parenExpr) ^^ {
-    case a ~ "^" ~ b => Exponent(a, b)
+    case a ~ "^" ~ b => BinaryOp(Exponent, a, b)
   }
 
   private lazy val factor: PackratParser[Expression] = parenExpr | exponent | value
 
   private lazy val term: PackratParser[Expression] = factor ~ rep(("*" | "/") ~ factor) ^^ {
     case head ~ tail => tail.foldLeft(head) {
-      case (tree, "*" ~ e) => Multiply(tree, e)
-      case (tree, "/" ~ e) => Divide(tree, e)
+      case (tree, "*" ~ e) => BinaryOp(Multiply, tree, e)
+      case (tree, "/" ~ e) => BinaryOp(Divide, tree, e)
     }
   }
 
   private lazy val sum: PackratParser[Expression] = term ~ rep(("+" | "-") ~ term) ^^ {
     case head ~ tail => tail.foldLeft(head) {
-      case (tree, "+" ~ e) => Add(tree, e)
-      case (tree, "-" ~ e) => Subtract(tree, e)
+      case (tree, "+" ~ e) => BinaryOp(Add, tree, e)
+      case (tree, "-" ~ e) => BinaryOp(Subtract, tree, e)
     }
   }
 
