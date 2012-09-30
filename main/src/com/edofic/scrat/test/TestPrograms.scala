@@ -178,6 +178,17 @@ object TestPrograms {
         |func plus(a)(b){a+b}
         |addOne = plus(1)
         |addOne(1) * plus(2)(4)
-      """.stripMargin, 12)
+      """.stripMargin, 12),
+
+    ("syntax sugar for short functions",
+      """
+        |f = func(n) n+1
+        |g = func(a)(b) a+b
+        |h = func(a) func (b) a+b
+        |
+        |a = g(f(0))(0)*h(1)(1)
+        |b = func(x){x+1}(0)
+        |a*b
+      """.stripMargin, 2)
   )
 }

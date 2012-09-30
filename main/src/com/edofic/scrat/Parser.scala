@@ -104,7 +104,9 @@ object Parser extends JavaTokenParsers with PackratParsers {
 
   private lazy val exprList: PackratParser[List[Expression]] = rep("\n") ~> repsep(expr, rep1("\n")) <~ rep("\n")
 
-  private lazy val block: PackratParser[List[Expression]] = ("{" ~ rep("\n")) ~> repsep(expr, rep("\n")) <~ (rep("\n") ~ "}")
+  private lazy val block: PackratParser[List[Expression]] =
+    ("{" ~ rep("\n")) ~> repsep(expr, rep("\n")) <~ (rep("\n") ~ "}") |
+      expr ^^ (List(_))
 
   private lazy val functionDef: PackratParser[Expression] =
     "func" ~> opt(simpleIdentifier) ~ rep1("(" ~> repsep(simpleIdentifier, ",") <~ ")") ~ block ~ opt(arglist) ^^ {
