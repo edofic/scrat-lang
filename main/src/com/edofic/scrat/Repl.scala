@@ -17,26 +17,11 @@ object Repl {
     """
       |Commands
       |:exit          exits program
-      |:run filename  loads and interprets the path
+      |:run filename  loads and interprets the path in new scope
+      |:load filename loads and interprets the path in global scope
       |:help          prints this message
       |
       |Append | to then end of a line to enter multiline expressions
-      |
-      |Language:
-      |-mathematical expressions containing
-      |   == != + - * / ^ ( )  variable-names function application-e.g. ln(10), println(1,2,3)
-      |-strings
-      |-assignments
-      |   x = ln(4)
-      |   println("x is", x)
-      |-functions: func name(arg1,arg2...) { expressions }
-      |-objects: use closure as constructor...like
-      |   func create(n) { this }
-      |   a = create(10)
-      |   a.n == 10
-      |-standard library
-      |   constants: pi, e
-      |   functions: ln, log, print, println, readln, mkString, toNum
     """.stripMargin
 
   def repl() {
