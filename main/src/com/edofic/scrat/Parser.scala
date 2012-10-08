@@ -1,9 +1,9 @@
 package com.edofic.scrat
 
-import util.parsing.combinator.{PackratParsers, JavaTokenParsers}
-import com.edofic.scrat.Util.Exceptions.ScratSyntaxError
-import com.edofic.scrat.Tokens.Equality._
 import com.edofic.scrat.Tokens.BinaryOp._
+import com.edofic.scrat.Tokens.Equality._
+import com.edofic.scrat.Util.Exceptions.ScratSyntaxError
+import util.parsing.combinator.{PackratParsers, JavaTokenParsers}
 
 /**
  * User: andraz
@@ -42,7 +42,10 @@ object Parser extends JavaTokenParsers with PackratParsers {
     }
   }
 
-  private lazy val value: PackratParser[Expression] = number | string | identifier | functionCall
+  private lazy val arrayLiteral: PackratParser[ArrayLiteral] =
+    "[" ~> repsep(expr, ",") <~ "]" ^^ (lst => ArrayLiteral(lst.toArray))
+
+  private lazy val value: PackratParser[Expression] = number | string | arrayLiteral | identifier | functionCall
 
   private lazy val exponent: PackratParser[Expression] = (value | parenExpr) ~ "^" ~ (value | parenExpr) ^^ {
     case a ~ "^" ~ b => BinaryOp(Exponent, a, b)

@@ -189,6 +189,12 @@ object TestPrograms {
         |a = g(f(0))(0)*h(1)(1)
         |b = func(x){x+1}(0)
         |a*b
-      """.stripMargin, 2)
+      """.stripMargin, 2),
+
+    ("arrays",
+      """
+        |array=[1,2,3]
+        |array(0) + array(1) + array(2)
+      """.stripMargin, 6)
   )
 }

@@ -1,7 +1,7 @@
 package com.edofic.scrat
 
-import com.edofic.scrat.Util.Exceptions._
 import Util.Implicits._
+import com.edofic.scrat.Util.Exceptions._
 
 /**
  * User: andraz
@@ -88,6 +88,8 @@ object StdLib extends SScope(None) {
       case (s: SScope) :: Nil => s.getDecription
       case other => throw ScratInvalidTypeError("expected a scope::Nil but got " + other)
     }
+
+
   }
 
 }

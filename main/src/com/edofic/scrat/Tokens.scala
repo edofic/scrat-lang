@@ -31,6 +31,8 @@ object Tokens {
 
   case class DotAccess(lst: List[Expression]) extends Expression
 
+  case class ArrayLiteral(xs: Array[Expression]) extends Expression
+
   object Equality {
 
     sealed trait Operator

@@ -1,10 +1,10 @@
 package com.edofic.scrat
 
-import com.edofic.scrat.Util.Exceptions._
-import Tokens._
 import ScratRuntime._
+import Tokens._
 import Util.Implicits._
-import BinaryOp._
+import com.edofic.scrat.Util.Exceptions._
+import com.edofic.scrat.Tokens.BinaryOp._
 
 /**
  * User: andraz
@@ -22,13 +22,6 @@ class Evaluator {
     def toDouble: Double = if (p) 1 else 0
   }
 
-  def apply(e: List[Expression])(implicit scope: SScope): Any = {
-    (e map apply).lastOption match {
-      case Some(a) => a
-      case None => ()
-    }
-  }
-
   def createFunFromAst(arglist: List[Identifier], body: List[Expression], scope: SScope): FunctionVarArg =
     (args: Any) => args match {
       case lst: List[Any] => {
@@ -44,6 +37,20 @@ class Evaluator {
       }
       case other => throw new ScratInvalidTypeError("expected list of arguments but got" + other)
     }
+
+  def createArray(xs: Array[Any]): FunctionVarArg = {
+    (args: Any) => args match {
+      case List(i: Double) => xs(i.toInt)
+      case other => throw new ScratInvalidTypeError("expected an index but got " + other)
+    }
+  }
+
+  def apply(e: List[Expression])(implicit scope: SScope): Any = {
+    (e map apply).lastOption match {
+      case Some(a) => a
+      case None => ()
+    }
+  }
 
   def apply(e: Expression)(implicit scope: SScope): Any = apply(e, None)(scope)
 
@@ -122,6 +129,8 @@ class Evaluator {
       name foreach (n => scope.put(n.id, fun))
       fun
     }
+
+    case ArrayLiteral(xs) => createArray(xs map apply)
 
     case t => throw new ScratInvalidTokenError(t + " not implemented in evaluator")
   }
