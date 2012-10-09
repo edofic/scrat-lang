@@ -22,7 +22,7 @@ class Evaluator {
     def toDouble: Double = if (p) 1 else 0
   }
 
-  def createFunFromAst(arglist: List[Identifier], body: List[Expression], scope: SScope): FunctionVarArg =
+  private def createFunFromAst(arglist: List[Identifier], body: List[Expression], scope: SScope): FunctionVarArg =
     (args: Any) => args match {
       case lst: List[Any] => {
         if (lst.length != arglist.length) {
@@ -38,7 +38,7 @@ class Evaluator {
       case other => throw new ScratInvalidTypeError("expected list of arguments but got" + other)
     }
 
-  def createArray(xs: Array[Any]): FunctionVarArg = {
+  private def createArray(xs: Array[Any]): FunctionVarArg = {
     (args: Any) => args match {
       case List(i: Double) => xs(i.toInt)
       case other => throw new ScratInvalidTypeError("expected an index but got " + other)
