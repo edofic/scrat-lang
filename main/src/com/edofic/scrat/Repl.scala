@@ -49,6 +49,7 @@ object Repl {
             case ScratSemanticError(msg) => println("semantic error: " + msg)
             case ScratSyntaxError(msg) => println("syntax error: " + msg)
             case ScratInvalidTypeError(msg) => println("type error: " + msg)
+            case ScratNotAllowedError(msg) => println("not allowed: "+ msg)
             case _: StringIndexOutOfBoundsException => () //empty line
           }
         }

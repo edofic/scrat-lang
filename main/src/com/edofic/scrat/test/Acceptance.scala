@@ -2,6 +2,7 @@ package com.edofic.scrat.test
 
 import org.scalatest.FunSuite
 import com.edofic.scrat.ScratRuntime
+import com.edofic.scrat.Util.Exceptions.ScratNotAllowedError
 
 /**
  * User: andraz
@@ -16,4 +17,13 @@ class Acceptance extends FunSuite {
   }
 
   TestPrograms.tuples foreach testProgramTuple
+
+  test("assigning to this"){
+    intercept[ScratNotAllowedError]{
+      runtime.cleanRoomEval(
+        """
+          |this = 1
+        """.stripMargin)
+    }
+  }
 }
