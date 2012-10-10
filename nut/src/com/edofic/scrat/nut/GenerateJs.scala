@@ -1,4 +1,4 @@
-package com.edofic.scrat.chocolate
+package com.edofic.scrat.nut
 
 import com.edofic.scrat.Tokens._
 
@@ -22,6 +22,8 @@ object GenerateJs {
         case BinaryOp.Divide => l+"/"+r
         case BinaryOp.Exponent => "Math.pow(%s, %s)" format (l,r)
       }
+    case Identifier(id) => id
+    case FunctionCall(func, args) => "(%s)(%s)" format (apply(func), args.lst map apply mkString ", ")
   }
 
 }
