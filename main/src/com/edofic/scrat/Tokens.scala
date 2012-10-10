@@ -13,6 +13,8 @@ object Tokens {
 
   case class Identifier(id: String) extends Expression
 
+  case object This extends Identifier("this")
+
   case class SString(s: String) extends Expression
 
   case class BinaryOp(op: BinaryOp.Binary, left: Expression, right: Expression) extends Expression

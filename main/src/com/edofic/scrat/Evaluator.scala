@@ -103,6 +103,7 @@ class Evaluator {
         }
       }
       target.lst.last match {
+        case This => throw new ScratNotAllowedError("you cannot assign to 'this'")
         case Identifier(id) => targetScope.put(id, apply(exp))
         case other => throw new ScratInvalidTypeError("expected identifier, got " + other)
       }

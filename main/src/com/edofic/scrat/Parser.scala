@@ -21,7 +21,8 @@ object Parser extends JavaTokenParsers with PackratParsers {
   }
 
   private lazy val simpleIdentifier: PackratParser[Identifier] = ident ^^ {
-    s => Identifier(s)
+    case "this" => This
+    case s => Identifier(s)
   }
 
   private lazy val identifier: PackratParser[DotAccess] = rep1sep((functionCall | simpleIdentifier), ".") ^^ DotAccess.apply
