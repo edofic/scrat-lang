@@ -25,12 +25,26 @@ object GenerateJs {
     case Identifier(id) => id
     //case This extends Identifier("this")
     case SString(s: String) => "\"" + s + "\""
-    //case ExpList(lst: List[Expression]) extends Expression
+    case ExpList(lst: List[Expression]) => lst map apply mkString ", "
     case FunctionCall(func, args) => "%s(%s)" format (apply(func), args.lst map apply mkString ", ")
 
     case Assignment(DotAccess(List(Identifier(name))), `exp`) => "var %s = %s" format (name, apply(exp))
     case Assignment(to: DotAccess, from: Expression) => "%s = %s" format (apply(to), apply(from))
-    //case IfThenElse(predicate: Expression, then: List[Expression], els: List[Expression]) extends Expression
+    case IfThenElse(predicate: Expression, then: List[Expression], els: List[Expression]) =>
+      """(function(){
+        |    if(%s){
+        |       %s
+        |       return %s;
+        |    } else {
+        |       %s;
+        |       return %s;
+        |    }
+        |}())""".stripMargin format (
+        apply(predicate),
+        (then.init) map apply mkString ";\n",
+        apply(then.last),
+        (els.init) map apply mkString ";\n",
+        apply(els.last))
     case Equality(op: Equality.Operator, left: Expression, right: Expression) => {
       val opstr = op match {
         case Equality.|== => "==="

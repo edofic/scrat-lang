@@ -195,6 +195,11 @@ object TestPrograms {
       """
         |array=[1,2,3]
         |array(0) + array(1) + array(2)
-      """.stripMargin, 6)
+      """.stripMargin, 6),
+
+    ("if then else",
+      """
+        |if (1) then 1 else 2
+      """.stripMargin, 1)
   )
 }
