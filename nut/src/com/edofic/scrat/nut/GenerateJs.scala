@@ -28,8 +28,9 @@ object GenerateJs {
     case ExpList(lst: List[Expression]) => lst map apply mkString ", "
     case FunctionCall(func, args) => "%s(%s)" format (apply(func), args.lst map apply mkString ", ")
 
-    case Assignment(DotAccess(List(Identifier(name))), `exp`) => "var %s = %s" format (name, apply(exp))
+    case Assignment(DotAccess(List(Identifier(name))), from: Expression) => "var %s = %s" format (name, apply(from))
     case Assignment(to: DotAccess, from: Expression) => "%s = %s" format (apply(to), apply(from))
+
     case IfThenElse(predicate: Expression, then: List[Expression], els: List[Expression]) =>
       """(function(){
         |    if(%s){
@@ -56,7 +57,19 @@ object GenerateJs {
       }
       apply(left) + opstr + apply(right)
     }
-    //case FunctionDef(name: Option[Identifier], args: List[Identifier], body: List[Expression]) extends Expression
+    case FunctionDef(name: Option[Identifier], args: List[Identifier], body: List[Expression]) => {
+      val init = (body.init) map apply mkString ";\n"
+      val bodyjs = (if (init!="") init+";\n" else "") + "return " + apply(body.last)
+      """
+        |function %s(%s){
+        |%s;
+        |}
+      """.stripMargin format (
+        (name getOrElse Identifier("")).id,
+        args map apply mkString ", ",
+        bodyjs
+        )
+    }
     case DotAccess(lst: List[Expression]) => lst map apply mkString "."
     case ArrayLiteral(xs: Array[Expression]) => xs map apply mkString ("[", ",", "]")
   }
