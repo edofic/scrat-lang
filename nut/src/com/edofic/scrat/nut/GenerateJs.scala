@@ -23,7 +23,28 @@ object GenerateJs {
         case BinaryOp.Exponent => "Math.pow(%s, %s)" format (l,r)
       }
     case Identifier(id) => id
-    case FunctionCall(func, args) => "(%s)(%s)" format (apply(func), args.lst map apply mkString ", ")
+    //case This extends Identifier("this")
+    case SString(s: String) => "\"" + s + "\""
+    //case ExpList(lst: List[Expression]) extends Expression
+    case FunctionCall(func, args) => "%s(%s)" format (apply(func), args.lst map apply mkString ", ")
+
+    case Assignment(DotAccess(List(Identifier(name))), `exp`) => "var %s = %s" format (name, apply(exp))
+    case Assignment(to: DotAccess, from: Expression) => "%s = %s" format (apply(to), apply(from))
+    //case IfThenElse(predicate: Expression, then: List[Expression], els: List[Expression]) extends Expression
+    case Equality(op: Equality.Operator, left: Expression, right: Expression) => {
+      val opstr = op match {
+        case Equality.|== => "==="
+        case Equality.|!= => "!=="
+        case Equality.|<= => "<="
+        case Equality.|>= => ">="
+        case Equality.|< => "<"
+        case Equality.|> => ">"
+      }
+      apply(left) + opstr + apply(right)
+    }
+    //case FunctionDef(name: Option[Identifier], args: List[Identifier], body: List[Expression]) extends Expression
+    case DotAccess(lst: List[Expression]) => lst map apply mkString "."
+    case ArrayLiteral(xs: Array[Expression]) => xs map apply mkString ("[", ",", "]")
   }
 
 }

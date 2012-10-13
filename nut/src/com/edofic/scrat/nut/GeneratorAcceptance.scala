@@ -18,8 +18,7 @@ import com.edofic.scrat.Tokens.Expression
 class GeneratorAcceptance extends FunSuite {
   def runJs(js: String): String = ("node" #< new ByteArrayInputStream(js.getBytes) !!)
 
-  def eval(scrat: String): String = scrat --> Parser.apply --> modifyTree --> GenerateJs.apply --> runJs
-  val e = (Parser.apply _) andThen (modifyTree _) andThen (GenerateJs.apply _) andThen (runJs _)
+  val eval = (Parser.apply _) andThen (modifyTree _) andThen (GenerateJs.apply _) andThen (runJs _)
 
   def modifyTree(lst: List[Expression]): List[Expression] = {
     import com.edofic.scrat.Tokens._

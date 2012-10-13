@@ -13,11 +13,11 @@ object TestPrograms {
 
     ("assignments",
       """
-        |a=log(1)
-        |b=pi
+         a=1
+         b=2
         |c=3
         |a+b+c
-      """.stripMargin, 3 + math.Pi),
+      """.stripMargin, 6),
 
     ("functions",
       """
