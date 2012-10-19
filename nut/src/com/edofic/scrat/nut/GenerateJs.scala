@@ -60,11 +60,9 @@ object GenerateJs {
     case FunctionDef(name: Option[Identifier], args: List[Identifier], body: List[Expression]) => {
       val init = (body.init) map apply mkString ";\n"
       val bodyjs = (if (init!="") init+";\n" else "") + "return " + apply(body.last)
-      """
-        |function %s(%s){
+      """function %s(%s){
         |%s;
-        |}
-      """.stripMargin format (
+        |}""".stripMargin format (
         (name getOrElse Identifier("")).id,
         args map apply mkString ", ",
         bodyjs
