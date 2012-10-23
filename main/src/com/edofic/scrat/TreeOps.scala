@@ -35,6 +35,42 @@ object TreeOps {
     case  ArrayLiteral(xs: Array[Expression]) => xs.toList
   }
 
+  /**
+   * apply a recursive modification to the tree.
+   * WARNING this is not typesafe and may blow up at runtime if func doesn't preserve type
+   * @param expr root
+   * @param func said modification
+   * @return new tree
+   */
+  def applyRecursiveModificaton(expr: Expression)(func: Expression=>Expression): Expression = {
+    def rec[A<:Expression](e:A) = applyRecursiveModificaton(e)(func).asInstanceOf[A]
+    func(expr match {
+      case  e: Number => e
+
+      case  e: Identifier => e
+
+      case  e: SString => e
+
+      case  BinaryOp(op, left , right ) => BinaryOp(op, rec(left), rec(right))
+
+      case  ExpList(lst) => ExpList(lst map rec)
+
+      case  FunctionCall(function, args: ExpList) => FunctionCall(rec(function), rec(args))
+
+      case  Assignment(to, from ) => Assignment(rec(to), rec(from))
+
+      case  IfThenElse(predicate, then, els) => IfThenElse(rec(predicate), then map rec, els map rec)
+
+      case  Equality(op, left, right ) => Equality(op, rec(left), rec(right))
+
+      case  FunctionDef(name, args, body) => FunctionDef(name map rec, args map rec, body map rec)
+
+      case  DotAccess(lst) => DotAccess(lst map rec)
+
+      case  ArrayLiteral(xs: Array[Expression]) => ArrayLiteral(xs map rec)
+    })
+  }
+
   def bfTraverse(expr: Expression): Stream[Expression] =  {
     import Stream.{#::,empty}
     def queueStream(queue: Queue[Expression]): Stream[Expression] = {

@@ -6,7 +6,7 @@ import com.edofic.scrat.Util.Exceptions.ScratNotAllowedError
 import com.edofic.scrat.Util.Implicits._
 import sys.process._
 import java.io.ByteArrayInputStream
-import com.edofic.scrat.Parser
+import com.edofic.scrat.{Optimizer, Parser}
 import com.edofic.scrat.Tokens.Expression
 
 
@@ -18,7 +18,7 @@ import com.edofic.scrat.Tokens.Expression
 class GeneratorAcceptance extends FunSuite {
   def runJs(js: String): String = ("node" #< new ByteArrayInputStream(js.getBytes) !!)
 
-  val eval = (Parser.apply _) andThen (modifyTree _) andThen (GenerateJs.apply _) andThen (runJs _)
+  val eval = Parser.apply _ andThen Optimizer.apply andThen modifyTree andThen GenerateJs.apply  andThen runJs
 
   def modifyTree(lst: List[Expression]): List[Expression] = {
     import com.edofic.scrat.Tokens._
