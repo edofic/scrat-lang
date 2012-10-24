@@ -32,9 +32,11 @@ object TreeOps {
 
     case  DotAccess(lst) => lst
 
-    case WhileLoop(condition, body) => condition::body
+    case  Loop(body) => body
 
     case  ArrayLiteral(xs: Array[Expression]) => xs.toList
+
+    case Repeat => Nil
   }
 
   private val expId: PartialFunction[Expression, Expression] = {
@@ -68,9 +70,11 @@ object TreeOps {
 
       case  DotAccess(lst) => DotAccess(lst map rec)
 
-      case WhileLoop(condition, body) => WhileLoop(rec(condition), body map rec)
+      case Loop(body) => Loop(body map rec)
 
       case  ArrayLiteral(xs: Array[Expression]) => ArrayLiteral(xs map rec)
+
+      case Repeat => Repeat
     }
     //println("e: "+e+ " func "+func+" expId "+expId)
     (func orElse expId)(e)

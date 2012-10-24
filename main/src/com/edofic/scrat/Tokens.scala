@@ -33,7 +33,9 @@ object Tokens {
 
   case class DotAccess(lst: List[Expression]) extends Expression
 
-  case class WhileLoop(condition: Expression, body: List[Expression]) extends Expression
+  case class Loop(body: List[Expression]) extends Expression
+
+  case object Repeat extends Expression //continue for while loop
 
   case class ArrayLiteral(xs: Array[Expression]) extends Expression
 

@@ -131,15 +131,17 @@ object Evaluator {
       fun
     }
 
-    case WhileLoop(condition, body) =>
-      while(
-        apply(condition) match {
-          case d: Double => d != 0
-          case other => throw new ScratInvalidTypeError("expected a number, got " + other)
+    case Loop(body) =>  {
+      def step(): Any = {
+        apply(body) match {
+          case Repeat => step()
+          case result => result
         }
-      ){
-        apply(body)
       }
+      step()
+    }
+
+    case Repeat => Repeat //nothing to do
 
     case ArrayLiteral(xs) => createArray(xs map apply)
   }
