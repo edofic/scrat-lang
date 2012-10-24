@@ -32,19 +32,20 @@ object TreeOps {
 
     case  DotAccess(lst) => lst
 
+    case WhileLoop(condition, body) => condition::body
+
     case  ArrayLiteral(xs: Array[Expression]) => xs.toList
   }
 
-  /**
-   * apply a recursive modification to the tree.
-   * WARNING this is not typesafe and may blow up at runtime if func doesn't preserve type
-   * @param expr root
-   * @param func said modification
-   * @return new tree
-   */
-  def applyRecursiveModificaton(expr: Expression)(func: Expression=>Expression): Expression = {
+  private val expId: PartialFunction[Expression, Expression] = {
+    case any => any
+  }
+
+  type Modification = PartialFunction[Expression, Expression]
+
+  def applyRecursiveModificaton(expr: Expression)(func: Modification): Expression = {
     def rec[A<:Expression](e:A) = applyRecursiveModificaton(e)(func).asInstanceOf[A]
-    func(expr match {
+    val e = expr match {
       case  e: Number => e
 
       case  e: Identifier => e
@@ -67,8 +68,12 @@ object TreeOps {
 
       case  DotAccess(lst) => DotAccess(lst map rec)
 
+      case WhileLoop(condition, body) => WhileLoop(rec(condition), body map rec)
+
       case  ArrayLiteral(xs: Array[Expression]) => ArrayLiteral(xs map rec)
-    })
+    }
+    //println("e: "+e+ " func "+func+" expId "+expId)
+    (func orElse expId)(e)
   }
 
   def bfTraverse(expr: Expression): Stream[Expression] =  {

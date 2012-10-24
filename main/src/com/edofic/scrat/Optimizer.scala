@@ -1,6 +1,7 @@
 package com.edofic.scrat
 
 import com.edofic.scrat.Tokens._
+import TreeOps.Modification
 
 /**
  * User: andraz
@@ -8,9 +9,13 @@ import com.edofic.scrat.Tokens._
  * Time: 11:54 AM
  */
 object Optimizer {
-  def apply(exps: List[Expression]): List[Expression] = exps map apply
-  def apply(exp: Expression): Expression = {
-    //no optimizations available
-    exp
+  val simplifyFunctionCalls: Modification = {
+    case DotAccess(List(f: FunctionCall)) => f
   }
+
+  val optimizations = simplifyFunctionCalls  :: Nil
+
+  def apply(exps: List[Expression]): List[Expression] = exps map apply
+  def apply(exp: Expression): Expression =
+    optimizations.foldLeft(exp)((tree, func) => TreeOps.applyRecursiveModificaton(exp)(func))
 }

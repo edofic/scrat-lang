@@ -13,14 +13,13 @@ object ScratRuntime {
 }
 
 class ScratRuntime {
-  val evaluator = new Evaluator
   implicit val globalScope = new SScope(Some(StdLib))
 
-  val eval = Parser.apply _ andThen Optimizer.apply andThen evaluator.apply
+  val eval = Parser.apply _ andThen Optimizer.apply andThen Evaluator.apply
 
   def cleanRoomEval(s: String) = {
     implicit val globalScope = new SScope(Some(StdLib))
-    s --> (Parser.apply _ andThen Optimizer.apply andThen evaluator.apply)
+    s --> (Parser.apply _ andThen Optimizer.apply andThen Evaluator.apply)
   }
 }
 
