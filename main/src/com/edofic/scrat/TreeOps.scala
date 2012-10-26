@@ -36,7 +36,7 @@ object TreeOps {
 
     case  ArrayLiteral(xs: Array[Expression]) => xs.toList
 
-    case Repeat => Nil
+    case Repeat(replacements) => replacements.unzip._2
   }
 
   private val expId: PartialFunction[Expression, Expression] = {
@@ -70,11 +70,11 @@ object TreeOps {
 
       case  DotAccess(lst) => DotAccess(lst map rec)
 
-      case Loop(body) => Loop(body map rec)
+      case  Loop(body) => Loop(body map rec)
 
       case  ArrayLiteral(xs: Array[Expression]) => ArrayLiteral(xs map rec)
 
-      case Repeat => Repeat
+      case Repeat(replacements) => Repeat(replacements map (t => (t._1, rec(t._2))))
     }
     //println("e: "+e+ " func "+func+" expId "+expId)
     (func orElse expId)(e)
@@ -100,5 +100,19 @@ object TreeOps {
       Stream.empty
     else
       str.tail
+  }
+
+  def namedFunctions(xs: List[Expression]) =
+    bfTraverse(xs).toList.flatMap{
+      case f @ FunctionDef(Some(name), args, body) => f::Nil
+      case _ => Nil
+    }
+
+  def endpoints(xs: List[Expression]): List[Expression] = xs match {
+    case Nil => Nil
+    case lst => lst.last match {
+      case IfThenElse(pred, then, els) => endpoints(then):::endpoints(els)
+      case token => token::Nil
+    }
   }
 }

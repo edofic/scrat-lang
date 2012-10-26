@@ -206,6 +206,12 @@ object TestPrograms {
       """
         |func fib(n) if n<2 then 1 else fib(n-1) + fib(n-2)
         |fib(20)
-      """.stripMargin, 10946)
+      """.stripMargin, 10946),
+
+    ("countdown / tail recursion",
+      """
+        |func count(n) if n<0 then n else count(n-1)
+        |count(100000)
+      """.stripMargin, -1)
   )
 }

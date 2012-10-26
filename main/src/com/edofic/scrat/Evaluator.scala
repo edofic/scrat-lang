@@ -134,14 +134,21 @@ object Evaluator {
     case Loop(body) =>  {
       def step(): Any = {
         apply(body) match {
-          case Repeat => step()
+          case r:Repeat => step()
           case result => result
         }
       }
       step()
     }
 
-    case Repeat => Repeat //nothing to do
+    case r @ Repeat(replacements) => {
+      replacements map {
+        case (id, exp) => (id.id, apply(exp))
+      } foreach {
+        case (id, value) => scope.put(id, value)
+      }
+      r
+    }
 
     case ArrayLiteral(xs) => createArray(xs map apply)
   }

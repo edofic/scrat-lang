@@ -35,7 +35,7 @@ object Tokens {
 
   case class Loop(body: List[Expression]) extends Expression
 
-  case object Repeat extends Expression //continue for while loop
+  case class Repeat(replacements: List[(Identifier,Expression)]) extends Expression //fancy continue for while loop
 
   case class ArrayLiteral(xs: Array[Expression]) extends Expression
 
