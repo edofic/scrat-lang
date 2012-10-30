@@ -20,8 +20,9 @@ object Parser extends JavaTokenParsers with PackratParsers {
     s => Number(s.toDouble)
   }
 
-  private lazy val simpleIdentifier: PackratParser[Identifier] = ident ^^ { s =>
-    if (s.toLowerCase().matches("this")) This else Identifier(s)
+  private lazy val simpleIdentifier: PackratParser[Identifier] = ident ^^ {
+    case "this" => This
+    case s => Identifier(s)
   }
 
   private lazy val identifier: PackratParser[DotAccess] = rep1sep((functionCall | simpleIdentifier), ".") ^^ DotAccess.apply

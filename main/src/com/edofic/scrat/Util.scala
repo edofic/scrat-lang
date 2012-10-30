@@ -28,4 +28,12 @@ object Util {
     }
   }
 
+  object Debugging{
+    val p = Parser.apply _ andThen (_(0))
+    val runtime = new ScratRuntime
+    val eval = runtime.cleanRoomEval _
+    val toTree = p andThen Optimizer.apply
+    val mod = TreeOps.applyRecursiveModificaton _
+  }
+
 }

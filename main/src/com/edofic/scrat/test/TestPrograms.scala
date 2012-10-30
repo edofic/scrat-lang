@@ -13,11 +13,11 @@ object TestPrograms {
 
     ("assignments",
       """
-        |a=log(1)
-        |b=pi
+         a=1
+         b=2
         |c=3
         |a+b+c
-      """.stripMargin, 3 + math.Pi),
+      """.stripMargin, 6),
 
     ("functions",
       """
@@ -195,6 +195,23 @@ object TestPrograms {
       """
         |array=[1,2,3]
         |array(0) + array(1) + array(2)
-      """.stripMargin, 6)
+      """.stripMargin, 6),
+
+    ("if then else",
+      """
+        |if (1) then 1 else 2
+      """.stripMargin, 1),
+
+    ("fibonnaci numbers",
+      """
+        |func fib(n) if n<2 then 1 else fib(n-1) + fib(n-2)
+        |fib(20)
+      """.stripMargin, 10946),
+
+    ("countdown / tail recursion",
+      """
+        |func count(n) if n<0 then n else count(n-1)
+        |count(100000)
+      """.stripMargin, -1)
   )
 }

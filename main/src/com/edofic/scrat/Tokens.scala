@@ -33,6 +33,10 @@ object Tokens {
 
   case class DotAccess(lst: List[Expression]) extends Expression
 
+  case class Loop(body: List[Expression]) extends Expression
+
+  case class Repeat(replacements: List[(Identifier,Expression)]) extends Expression //fancy continue for while loop
+
   case class ArrayLiteral(xs: Array[Expression]) extends Expression
 
   object Equality {

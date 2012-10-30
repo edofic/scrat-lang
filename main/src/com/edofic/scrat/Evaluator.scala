@@ -11,7 +11,7 @@ import com.edofic.scrat.Tokens.BinaryOp._
  * Date: 8/25/12
  * Time: 10:15 PM
  */
-class Evaluator {
+object Evaluator {
   private def binaryDouble(l: Expression, r: Expression)(f: (Double, Double) => Double)
                           (implicit scope: SScope): Double = (apply(l), apply(r)) match {
     case (a: Double, b: Double) => f(a, b)
@@ -131,9 +131,26 @@ class Evaluator {
       fun
     }
 
-    case ArrayLiteral(xs) => createArray(xs map apply)
+    case Loop(body) =>  {
+      def step(): Any = {
+        apply(body) match {
+          case r:Repeat => step()
+          case result => result
+        }
+      }
+      step()
+    }
 
-    case t => throw new ScratInvalidTokenError(t + " not implemented in evaluator")
+    case r @ Repeat(replacements) => {
+      replacements map {
+        case (id, exp) => (id.id, apply(exp))
+      } foreach {
+        case (id, value) => scope.put(id, value)
+      }
+      r
+    }
+
+    case ArrayLiteral(xs) => createArray(xs map apply)
   }
 
 }
