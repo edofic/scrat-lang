@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: scala-library.jar scala-dbc.jar scalatest_2.9.0-1.8.jar
-Main-Class: com.edofic.scrat.Interpreter
-

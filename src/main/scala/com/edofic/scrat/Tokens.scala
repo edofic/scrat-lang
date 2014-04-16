@@ -13,8 +13,6 @@ object Tokens {
 
   case class Identifier(id: String) extends Expression
 
-  case object This extends Identifier("this")
-
   case class SString(s: String) extends Expression
 
   case class BinaryOp(op: BinaryOp.Binary, left: Expression, right: Expression) extends Expression
@@ -38,6 +36,8 @@ object Tokens {
   case class Repeat(replacements: List[(Identifier,Expression)]) extends Expression //fancy continue for while loop
 
   case class ArrayLiteral(xs: Array[Expression]) extends Expression
+
+  object This extends Identifier("this")
 
   object Equality {
 
